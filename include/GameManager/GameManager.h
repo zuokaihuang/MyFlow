@@ -18,7 +18,9 @@ USING_NS_CC;
 namespace tds {
 
 	class SpeciallyEffectLayer;
+	class ShowNextLayer;
 	class GameLayer;
+	class RandomRunRole;
 
 	class GameManager : public Singleton<GameManager>{
 
@@ -29,11 +31,14 @@ namespace tds {
 	public:
 		SpeciallyEffectLayer	*m_SpeciallyEffectLayer;
 		GameLayer			*m_GameLayer;
-
+		ShowNextLayer			*m_ShowNextLayer;
 
 	public:
 		void goNextLayer();
 		void goPreLayer();
+
+		void checkCollision(RandomRunRole* pRole);
+
 	};
 
 #define g_GameManager GameManager::Instance()

@@ -67,7 +67,7 @@ void SpeciallyEffectLayer::onEnter()
 	m_layer = LayerColor::create(Color4B(0x00, 0xBF, 0xFF,255));
 	auto s = Director::getInstance()->getWinSize();
 
-	m_layer->setContentSize(Size(400,s.height));
+	m_layer->setContentSize(Size(s.width*3/4, s.height));
 	m_layer->setPosition(s.width/2 - m_layer->getContentSize().width/2,0);
 	this->addChild(m_layer);
 

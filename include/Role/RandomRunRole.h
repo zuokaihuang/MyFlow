@@ -12,12 +12,12 @@ namespace tds{
 		RandomRunRole(std::string name = "");
 		virtual bool init(std::string name = "");
 		virtual std::string getPath(){ return ""; }
-
+		void onMoveCallBack();
 	public:
 		CC_SYNTHESIZE(bool, m_CanRun,CanRun);
-		void onMoveCallBack();
+		
 		virtual void beginRandomRun();
-
+		virtual void checkCollision();
 		virtual void update(float dt);
 	};
 

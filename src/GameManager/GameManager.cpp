@@ -8,7 +8,12 @@
 
 #include "GameManager.h"
 #include "SpeciallyEffectLayer.h"
+#include "ShowNextLayer.h"
 #include "GameLayer.h"
+#include "RandomRunRole.h"
+#include "Enemy.h"
+#include "NextLayerNPC.h"
+#include "PreLayerNPC.h"
 
 using namespace tds;
 
@@ -24,6 +29,7 @@ GameManager::~GameManager()
 {
 	CC_SAFE_RELEASE(m_SpeciallyEffectLayer);
 	CC_SAFE_RELEASE(m_GameLayer);
+	CC_SAFE_RELEASE(m_ShowNextLayer);
 }
 
 void GameManager::goNextLayer()
@@ -34,4 +40,13 @@ void GameManager::goNextLayer()
 void GameManager::goPreLayer()
 {
 	m_SpeciallyEffectLayer->onSetColor(false);
+}
+
+void GameManager::checkCollision(RandomRunRole* pRole)
+{
+	auto rolePosition = pRole->getPosition();
+	if (m_GameLayer->checkCollision(rolePosition))
+	{
+		pRole->removeFromParent();
+	}
 }
