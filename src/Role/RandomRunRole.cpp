@@ -67,7 +67,6 @@ void RandomRunRole::beginRandomRun()
 		auto distance = srcPosition.getDistance(Vec2(pX, pY));
 		auto moveDuration = distance / 30;
 
-		log("%s  pX=%f pY=%f   and this->getPosition(%f,%f)", this->getName().c_str(), pX, pY, srcPosition.x, srcPosition.y);
 		//auto direct = (Vec2(pX, pY) - srcPosition).getNormalized();
 		//Vec2 moveSpeed = direct * 2;
 

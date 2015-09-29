@@ -52,13 +52,12 @@ bool SpeciallyEffectLayer::init()
 void SpeciallyEffectLayer::onSetColor(bool next_or_pre)
 {
 	auto index = next_or_pre ? ++m_nextLayerColorIndex : --m_nextLayerColorIndex;
-	m_layer->setColor(Color3B(level_bgColor[index]));
-
 	//test
-	if (m_nextLayerColorIndex == 9 || m_nextLayerColorIndex==-1){
+	if (m_nextLayerColorIndex == 9 || m_nextLayerColorIndex == -1){
 		m_nextLayerColorIndex = 0;
 	}
 
+	m_layer->setColor(Color3B(level_bgColor[ (index==-1) ? 0 : index]));
 }
 
 void SpeciallyEffectLayer::onEnter()
