@@ -24,12 +24,28 @@ enum
 unordered_map<int, Vector<Enemy*> > FishMap;
 unordered_map<int, Vector<Enemy*> > JellyfishFishMap;
 unordered_map<int, Vector<Enemy*> > FlockfishMap;
+unordered_map<int, Vector<BaseNPC*> > NPCMap;
 
-const int MAXLAYER = 20;
-const int MAXFISHNUMBERS = 5;
-const int MAXJELLYFISHNUMBERS = 2;
+const int MAXLAYER = 21;
+const int MAXFISHNUMBERS = 6;
+const int MAXJELLYFISHNUMBERS = 3;
+
+/*******************************************
+ // logic layer
+
+	 Layer 1
+	 Layer 2
+	 Layer 3
+	 ......
+	 ......
+	 Layer (MAXLAYER-1)
+	
+*********************************************/
 
 GameLayer::GameLayer()
+:m_PreLayer(0), ///0 mean nothing layer 
+ m_CurrentLayer(1),
+ m_NextLayer(2)
 {
 	g_GameManager->m_GameLayer = this;
 	this->retain();
@@ -46,8 +62,9 @@ void GameLayer::readConfigureFile(std::string path)
 
 
 
-	for (auto layer = 0; layer != MAXLAYER; ++layer){
+	for (auto layer = 1; layer != MAXLAYER; ++layer){
 
+		//add Enemy 
 		for (auto num = 0; num != MAXFISHNUMBERS; ++num){
 			auto		fish = EnemyFactory::create("Fish");
 			FishMap[layer].pushBack(fish);
@@ -56,6 +73,26 @@ void GameLayer::readConfigureFile(std::string path)
 			auto		jellyfish = EnemyFactory::create("Jellyfish");
 			JellyfishFishMap[layer].pushBack(jellyfish);
 		}
+
+		//add NPC  
+		if (1 == layer){
+			auto nextNPC = NextLayerNPC::create();
+			NPCMap[layer].pushBack(nextNPC);
+		}
+		else if (MAXLAYER-1 == layer){
+			auto preNPC = PreLayerNPC::create();
+			NPCMap[layer].pushBack(preNPC);
+		}
+		else {
+			auto nextNPC = NextLayerNPC::create();
+			NPCMap[layer].pushBack(nextNPC);
+			auto preNPC = PreLayerNPC::create();
+			NPCMap[layer].pushBack(preNPC);
+		}
+
+		//add Food
+		//	{
+		//	}
 
 	}
 }
@@ -72,6 +109,11 @@ bool GameLayer::init()
 		AddNPC();
 		AddFish("Fish",5);
 		//AddFish("Jellyfish",2,15);
+
+		this->setAllChildrenVisibleByLayer(m_CurrentLayer,true);
+		this->setAllChildrenVisibleByLayer(m_NextLayer,true);
+		this->setAllChildrenOpacityByLayer(m_NextLayer,20);
+
 		std::srand((unsigned)time(nullptr));
 		this->schedule(CC_SCHEDULE_SELECTOR(GameLayer::onConnect), 2.0f);
 		
@@ -91,6 +133,7 @@ void GameLayer::AddPlayer(size_t numbers)
 
 void GameLayer::AddNPC(size_t numbers)
 {
+	/*
 	auto nextLayerNpc = NextLayerNPC::create();
 	nextLayerNpc->setPosition(200,300);
 	this->addChild(nextLayerNpc,2,kTagNextLayerNPC);
@@ -99,6 +142,22 @@ void GameLayer::AddNPC(size_t numbers)
 	auto preLayerNpc = PreLayerNPC::create();
 	preLayerNpc->setPosition(300.0f,200.0f);
 	this->addChild(preLayerNpc, 2, kTagPreLayerNPC);
+	*/
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	for (auto layer = 1; layer != MAXLAYER; ++layer){
+
+		for (auto npc : NPCMap[layer])
+		{
+			auto pX = origin.x + (visibleSize.width) * CCRANDOM_0_1();
+			auto pY = origin.y + (visibleSize.height) * CCRANDOM_0_1();
+			npc->setPosition(pX,pY);
+			npc->setVisible(false);
+			this->addChild(npc,2,kTagNextLayerNPC);
+		}
+	}
+
+
 }
 
 void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
@@ -106,7 +165,7 @@ void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	for (size_t layer = 0; layer != 2; ++layer){
+	for (size_t layer = 1; layer != MAXLAYER; ++layer){
 
 		for (auto fish : FishMap[layer]){	
 
@@ -115,6 +174,7 @@ void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
 			fish->setPosition(Vec2(pX, pY));
 			fish->setScale(0.3f);
 			//fish->setOpacity(opacity);
+			fish->setVisible(false);
 			this->addChild(fish);
 		}
 
@@ -125,6 +185,7 @@ void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
 			jellyfish->setPosition(Vec2(pX, pY));
 			jellyfish->setScale(0.3f);
 			//fish->setOpacity(opacity);
+			jellyfish->setVisible(false);
 			this->addChild(jellyfish);
 		}
 
@@ -135,7 +196,11 @@ void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
 void GameLayer::onConnect(float dt)
 {
 	auto playerPositon = getChildByTag(kTagPlayer)->getPosition();
-	auto npcPosition = getChildByTag(kTagNextLayerNPC)->getPosition();
+	Vec2 npcPosition;
+	for (auto npc : NPCMap[m_CurrentLayer]){
+		if ("NextLayerNPC" == npc->getName())
+			npcPosition = npc->getPosition();
+	}
 
 	auto drawSignal = DrawNode::create();
 	this->addChild(drawSignal,0, kTagDrawSignal);
@@ -155,38 +220,76 @@ void GameLayer::RemoveSignal(float dt)
 	//NextLayer();
 }
 
+bool GameLayer::setAllChildrenVisibleByLayer(int layer, bool visible)
+{
+	bool ret = false;
+	// Enemy
+	for (auto fish : FishMap[layer]){
+		fish->setVisible(visible);
+	}
+	for (auto jellyfish : JellyfishFishMap[layer]){
+		jellyfish->setVisible(visible);
+	}
+
+	// NPC
+	for (auto npc : NPCMap[layer]){
+		npc->setVisible(visible);
+	}
+	// Food
+	ret = true;
+	return ret;
+}
+bool GameLayer::setAllChildrenOpacityByLayer(int layer, GLubyte opacity)
+{
+	bool ret = false;
+	// Enemy
+	for (auto fish : FishMap[layer]){
+		fish->setOpacity(opacity);
+	}
+	for (auto jellyfish : JellyfishFishMap[layer]){
+		jellyfish->setOpacity(opacity);
+	}
+
+	// NPC
+	for (auto npc : NPCMap[layer]){
+		npc->setOpacity(opacity);
+	}
+	// Food
+	ret = true;
+	return ret;
+}
 
 void GameLayer::NextLayer()
 {
-	auto vecNode = this->getChildren();
-	for (auto node : vecNode){
-		if (kTagPlayer != node->getTag()){
-			auto position = node->getPosition();
-			float x;
-			if (position.x> Director::getInstance()->getVisibleSize().width/2){
-				x = position.x + 30;
-			}
-			else
-				x = position.x - 30;
-
-			auto moveto = MoveTo::create(0.2f, Vec2(x, position.y));
-			auto scaleto = ScaleTo::create(0.2f,1.1f);
-			auto action = Sequence::create(
-				moveto,
-				FadeOut::create(0.2f), FadeIn::create(0.2f),
-				nullptr);
-			node->runAction(action);
-			
-		}
-		
-	}
-	this->scheduleOnce(CC_SCHEDULE_SELECTOR(GameLayer::onMoveCallBack), 0.3f);
-	
+	// 1 . set All Children in CurrentLayer	invisible [setVisible(false)]
+	this->setAllChildrenVisibleByLayer(m_CurrentLayer,false);
+	// 2 .go,go,go, and Nextlayer++ , now the NextLayer become CurrentLayer.
+	//  and set children's Opacity to 255 make them clear .
+	m_PreLayer = m_CurrentLayer; m_CurrentLayer = m_NextLayer;++m_NextLayer;
+	this->setAllChildrenOpacityByLayer(m_CurrentLayer,255);
+	// 3 . set All Children  in NextLayer visiable and set opacity to 20 [or less then 20]
+	//make them dark [to make them look like  really in the NextLayer.]
+	this->setAllChildrenVisibleByLayer(m_NextLayer,true);
+	this->setAllChildrenOpacityByLayer(m_NextLayer,20);
+	g_GameManager->goNextLayer();
 }
 
 void GameLayer::PreLayer()
 {
+	// 1 . set All Children in NextLayer invisible [setVisible(false)]
+	this->setAllChildrenVisibleByLayer(m_NextLayer, false);
+	// 2 . set all CurrentLayer children's Opacity to 20 [or less then 20] make them dark
+	this->setAllChildrenOpacityByLayer(m_CurrentLayer,20);
+	//
+	// 3 . set all children in PreLayer visible [if opacity is 20 then set it to 255] .
+	// PreLayer-- , and now the PreLayer become CurrentLayer.
+	this->setAllChildrenVisibleByLayer(m_PreLayer,true);
+	this->setAllChildrenOpacityByLayer(m_PreLayer,255);
+
+	m_NextLayer = m_CurrentLayer; m_CurrentLayer = m_PreLayer; --m_PreLayer;
+
 	g_GameManager->goPreLayer();
+
 }
 
 void GameLayer::onMoveCallBack(float dt)

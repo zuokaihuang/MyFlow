@@ -2,7 +2,6 @@
 #ifndef _GAMELAYER_H__
 #define _GAMELAYER_H__
 
-#include "cocos2d.h"
 #include "BaseLayer.h"
 
 namespace tds{
@@ -18,12 +17,20 @@ namespace tds{
 
 		CREATE_FUNC(GameLayer);
 
+		CC_SYNTHESIZE(int, m_PreLayer,		PreLayer);
+		CC_SYNTHESIZE(int, m_CurrentLayer, CurrentLayer);
+		CC_SYNTHESIZE(int, m_NextLayer,	NextLayer);
+
 		virtual void onEnter();
 		virtual void onExit();
 		virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
 		virtual void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
 		virtual void onTouchEnded(cocos2d::Touch* touch,cocos2d::Event* event);
 		bool checkCollision(cocos2d::Point p);
+
+		void NextLayer();
+		void PreLayer();
+
 	private:
 		GameLayer();
 		~GameLayer();
@@ -34,11 +41,15 @@ namespace tds{
 		void onConnect(float dt);
 		void RemoveSignal(float dt);
 
-		void NextLayer();
-		void PreLayer();
+
 		void onMoveCallBack(float dt);
 
 		void onStop(){};
+
+		bool setAllChildrenVisibleByLayer(int layer, bool visible);
+		bool setAllChildrenOpacityByLayer(int layer, GLubyte opacity);
+
+
 	};
 
 

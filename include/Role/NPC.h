@@ -12,7 +12,7 @@ namespace tds{
 	protected:
 		BaseNPC(std::string name);
 		//~BaseNPC();
-		virtual void checkCollision(){};
+		virtual void checkCollision();
 	};
 
 };

@@ -45,8 +45,20 @@ void GameManager::goPreLayer()
 void GameManager::checkCollision(RandomRunRole* pRole)
 {
 	auto rolePosition = pRole->getPosition();
-	if (m_GameLayer->checkCollision(rolePosition))
+
+	if(m_GameLayer->checkCollision(rolePosition))
 	{
-		pRole->removeFromParent();
+		if ("NextLayerNPC" == pRole->getName()){
+			log("%s", "NextLayerNPC");
+			m_GameLayer->NextLayer();
+
+		}
+		else if ("PreLayerNPC" == pRole->getName()){
+			log("%s", "PreLayerNPC");
+			m_GameLayer->PreLayer();
+
+		}
+		else
+			pRole->removeFromParent();
 	}
 }
