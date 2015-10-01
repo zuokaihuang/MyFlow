@@ -30,6 +30,8 @@ const int MAXLAYER = 21;
 const int MAXFISHNUMBERS = 6;
 const int MAXJELLYFISHNUMBERS = 3;
 
+const float  OPACITY = 20;/*Opacity*/
+
 /*******************************************
  // logic layer
 
@@ -109,10 +111,10 @@ bool GameLayer::init()
 		AddNPC();
 		AddFish("Fish",5);
 		//AddFish("Jellyfish",2,15);
-
+		//this->setOpacity(122);
 		this->setAllChildrenVisibleByLayer(m_CurrentLayer,true);
 		this->setAllChildrenVisibleByLayer(m_NextLayer,true);
-		this->setAllChildrenOpacityByLayer(m_NextLayer,20);
+		this->setAllChildrenOpacityByLayer(m_NextLayer, OPACITY);
 
 		std::srand((unsigned)time(nullptr));
 		this->schedule(CC_SCHEDULE_SELECTOR(GameLayer::onConnect), 2.0f);
@@ -175,7 +177,7 @@ void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
 			fish->setScale(0.3f);
 			//fish->setOpacity(opacity);
 			fish->setVisible(false);
-			this->addChild(fish);
+			this->addChild(fish,1,9);
 		}
 
 		for (auto jellyfish : JellyfishFishMap[layer]){
@@ -186,7 +188,7 @@ void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
 			jellyfish->setScale(0.3f);
 			//fish->setOpacity(opacity);
 			jellyfish->setVisible(false);
-			this->addChild(jellyfish);
+			this->addChild(jellyfish, 1, 8);
 		}
 
 	}
@@ -239,20 +241,23 @@ bool GameLayer::setAllChildrenVisibleByLayer(int layer, bool visible)
 	ret = true;
 	return ret;
 }
-bool GameLayer::setAllChildrenOpacityByLayer(int layer, GLubyte opacity)
+bool GameLayer::setAllChildrenOpacityByLayer(int layer, GLubyte opacity, float BlurRadius)
 {
 	bool ret = false;
 	// Enemy
 	for (auto fish : FishMap[layer]){
 		fish->setOpacity(opacity);
+		fish->setBlurRadius(BlurRadius);
 	}
 	for (auto jellyfish : JellyfishFishMap[layer]){
 		jellyfish->setOpacity(opacity);
+		jellyfish->setBlurRadius(BlurRadius);
 	}
 
 	// NPC
 	for (auto npc : NPCMap[layer]){
 		npc->setOpacity(opacity);
+		npc->setBlurRadius(BlurRadius);
 	}
 	// Food
 	ret = true;
@@ -270,7 +275,7 @@ void GameLayer::NextLayer()
 	// 3 . set All Children  in NextLayer visiable and set opacity to 20 [or less then 20]
 	//make them dark [to make them look like  really in the NextLayer.]
 	this->setAllChildrenVisibleByLayer(m_NextLayer,true);
-	this->setAllChildrenOpacityByLayer(m_NextLayer,20);
+	this->setAllChildrenOpacityByLayer(m_NextLayer, OPACITY);
 	g_GameManager->goNextLayer();
 }
 
@@ -279,7 +284,7 @@ void GameLayer::PreLayer()
 	// 1 . set All Children in NextLayer invisible [setVisible(false)]
 	this->setAllChildrenVisibleByLayer(m_NextLayer, false);
 	// 2 . set all CurrentLayer children's Opacity to 20 [or less then 20] make them dark
-	this->setAllChildrenOpacityByLayer(m_CurrentLayer,20);
+	this->setAllChildrenOpacityByLayer(m_CurrentLayer, OPACITY);
 	//
 	// 3 . set all children in PreLayer visible [if opacity is 20 then set it to 255] .
 	// PreLayer-- , and now the PreLayer become CurrentLayer.

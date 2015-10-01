@@ -8,7 +8,9 @@ USING_NS_CC;
 
 RandomRunRole::RandomRunRole(std::string name)
 :Role(name),
-m_CanRun(true)
+m_CanRun(true),
+m_blurRadius(1),
+m_blurSampleNum(2)
 {
 	
 }
@@ -100,4 +102,54 @@ void RandomRunRole::beginRandomRun()
 void RandomRunRole::onMoveCallBack()
 {
 	this->m_CanRun = true;
+}
+
+
+bool RandomRunRole::initWithTexture(Texture2D* texture, const Rect& rect)
+{
+	m_blurRadius = 0;
+	if (Sprite::initWithTexture(texture, rect))
+	{
+#if CC_ENABLE_CACHE_TEXTURE_DATA
+		auto listener = EventListenerCustom::create(EVENT_RENDERER_RECREATED, [this](EventCustom* event){
+			setGLProgram(nullptr);
+			initGLProgram();
+		});
+
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+#endif
+
+		//initGLProgram();
+
+		return true;
+	}
+
+	return false;
+}
+
+void RandomRunRole::initGLProgram()
+{
+	GLchar * fragSource = (GLchar*)String::createWithContentsOfFile(
+		FileUtils::getInstance()->fullPathForFilename("Shaders/example_Blur.fsh").c_str())->getCString();
+	auto program = GLProgram::createWithByteArrays(ccPositionTextureColor_noMVP_vert, fragSource);
+
+	auto glProgramState = GLProgramState::getOrCreateWithGLProgram(program);
+	setGLProgramState(glProgramState);
+
+	auto size = getTexture()->getContentSizeInPixels();
+	getGLProgramState()->setUniformVec2("resolution", size);
+	getGLProgramState()->setUniformFloat("blurRadius", 1.0);
+	getGLProgramState()->setUniformFloat("sampleNum",7.0f);
+}
+
+void RandomRunRole::setBlurRadius(float radius)
+{
+	m_blurRadius = radius;
+	//getGLProgramState()->setUniformFloat("blurRadius", m_blurRadius);
+}
+
+void RandomRunRole::setBlurSampleNum(float num)
+{
+	m_blurSampleNum = num;
+	//getGLProgramState()->setUniformFloat("sampleNum", m_blurSampleNum);
 }

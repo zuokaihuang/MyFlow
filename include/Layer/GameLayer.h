@@ -47,7 +47,7 @@ namespace tds{
 		void onStop(){};
 
 		bool setAllChildrenVisibleByLayer(int layer, bool visible);
-		bool setAllChildrenOpacityByLayer(int layer, GLubyte opacity);
+		bool setAllChildrenOpacityByLayer(int layer, GLubyte opacity, float BlurRadius = 12.0f);
 
 
 	};

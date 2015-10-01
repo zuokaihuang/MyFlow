@@ -14,6 +14,10 @@ namespace tds{
 	public:
 		CC_SYNTHESIZE(std::string, m_Name, Name);
 
+		CC_SYNTHESIZE(float , m_MaxHP,			MaxHP);
+		CC_SYNTHESIZE(float , m_CurrentHP,		CurrentHP);
+		CC_SYNTHESIZE(float , m_MoveSpeed,		MoveSpeed);
+
 	};
 
 
