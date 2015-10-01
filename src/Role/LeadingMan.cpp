@@ -24,7 +24,7 @@ LeadingMan::LeadingMan(std::string name)
 
 LeadingMan::~LeadingMan()
 {
-	printf("%s",__FUNCTIONW__);
+	printf("%s", __func__);
 }
 
 bool LeadingMan::init()

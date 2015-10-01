@@ -353,7 +353,7 @@ bool GameLayer::checkCollision(cocos2d::Point p)
 	auto pPlayer = this->getChildByTag(kTagPlayer);
 	auto diff = pPlayer->getPosition() - p;
 	if (diff.getLength() <= 5.00f){
-		log("%s and diff=>%f", __FUNCTIONW__, diff.getLength());
+		log("%s and diff=>%f", __func__ , diff.getLength());
 		ret = true;
 	}
 	return ret;
