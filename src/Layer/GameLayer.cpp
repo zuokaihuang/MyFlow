@@ -21,12 +21,14 @@ enum
 };
 
 // < int Layer, Enemy fishType or other >
+unordered_map<int, Vector<Enemy*> > FoodMap;
 unordered_map<int, Vector<Enemy*> > FishMap;
 unordered_map<int, Vector<Enemy*> > JellyfishFishMap;
 unordered_map<int, Vector<Enemy*> > FlockfishMap;
 unordered_map<int, Vector<BaseNPC*> > NPCMap;
 
 const int MAXLAYER = 21;
+const int MAXFOODNUMBERS = 11;
 const int MAXFISHNUMBERS = 6;
 const int MAXJELLYFISHNUMBERS = 3;
 
@@ -68,8 +70,8 @@ void GameLayer::readConfigureFile(std::string path)
 
 		//add Enemy 
 		for (auto num = 0; num != MAXFISHNUMBERS; ++num){
-			auto		fish = EnemyFactory::create("Fish");
-			FishMap[layer].pushBack(fish);
+			//auto		fish = EnemyFactory::create("Fish");
+			//FishMap[layer].pushBack(fish);
 		}
 		for (auto num = 0; num != MAXJELLYFISHNUMBERS; ++num){
 			auto		jellyfish = EnemyFactory::create("Jellyfish");
@@ -95,6 +97,10 @@ void GameLayer::readConfigureFile(std::string path)
 		//add Food
 		//	{
 		//	}
+		for (auto num = 0; num != MAXFOODNUMBERS; ++num){
+			auto food = EnemyFactory::create("Food");
+			FoodMap[layer].pushBack(food);
+		}
 
 	}
 }
@@ -105,11 +111,15 @@ bool GameLayer::init()
 	do{
 
 		CC_BREAK_IF(!BaseLayer::init());
+
+		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Player.plist", "Player.pvr.ccz");
+
 		readConfigureFile();
 
 		AddPlayer();
 		AddNPC();
 		AddFish("Fish",5);
+		AddFood();
 		//AddFish("Jellyfish",2,15);
 		//this->setOpacity(122);
 		this->setAllChildrenVisibleByLayer(m_CurrentLayer,true);
@@ -130,6 +140,7 @@ void GameLayer::AddPlayer(size_t numbers)
 	auto player = LeadingMan::create("hzk");
 	player->setPosition(100,200);
 	player->setScale(0.3f);
+	player->RunLevelAction(1);
 	this->addChild(player,1,kTagPlayer);
 }
 
@@ -160,6 +171,23 @@ void GameLayer::AddNPC(size_t numbers)
 	}
 
 
+}
+void GameLayer::AddFood(size_t numbers)
+{
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	for (auto layer = 1; layer != MAXLAYER; ++layer){
+
+		for (auto food : FoodMap[layer])
+		{
+			auto pX = origin.x + (visibleSize.width) * CCRANDOM_0_1();
+			auto pY = origin.y + (visibleSize.height) * CCRANDOM_0_1();
+			food->setPosition(pX, pY);
+			food->setScale(0.3f);
+			food->setVisible(false);
+			this->addChild(food);
+		}
+	}
 }
 
 void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
@@ -238,6 +266,10 @@ bool GameLayer::setAllChildrenVisibleByLayer(int layer, bool visible)
 		npc->setVisible(visible);
 	}
 	// Food
+	for (auto food : FoodMap[layer]){
+		food->setVisible(visible);
+	}
+
 	ret = true;
 	return ret;
 }
@@ -260,6 +292,12 @@ bool GameLayer::setAllChildrenOpacityByLayer(int layer, GLubyte opacity, float B
 		npc->setBlurRadius(BlurRadius);
 	}
 	// Food
+	for (auto food : FoodMap[layer]){
+		food->setOpacity(opacity);
+		food->setBlurRadius(BlurRadius);
+	}
+
+
 	ret = true;
 	return ret;
 }
@@ -333,11 +371,19 @@ void GameLayer::onTouchMoved(Touch* touch, Event* event)
 
 void GameLayer::onTouchEnded(Touch* touch, Event* event)
 {
-	auto pPlayer = this->getChildByTag(kTagPlayer);
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
 	pPlayer->stopAllActions();
-
+	pPlayer->RunLevelAction(2);
 	auto touchPoint = touch->getLocation();
 	//touchPoint = this->convertToNodeSpace(touchPoint);
+
+	//pPlayer->setRotation(atan2((touchPoint.x - pPlayer->getPositionX()),
+	//	(touchPoint.y - pPlayer->getPositionY())) * 180 / 3.1415926 + 90);
+	auto rotation = atan2((touchPoint.x - pPlayer->getPositionX()),
+		(touchPoint.y - pPlayer->getPositionY())) * 180 / 3.1415926 + 90;
+	auto rotate = RotateTo::create(0.3, rotation);
+
+	pPlayer->runAction(rotate);
 
 	Point moveDifference = touchPoint - pPlayer->getPosition();
 	float distanceToMove = moveDifference.getLength();
@@ -358,8 +404,22 @@ bool GameLayer::checkCollision(cocos2d::Point p)
 	auto pPlayer = this->getChildByTag(kTagPlayer);
 	auto diff = pPlayer->getPosition() - p;
 	if (diff.getLength() <= 5.00f){
-		log("%s and diff=>%f", __func__ , diff.getLength());
+		log(" diff=>%f", diff.getLength());
 		ret = true;
 	}
 	return ret;
+}
+
+void GameLayer::onStop()
+{
+	
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
+	
+
+	auto rota = RotateBy::create(30, 360);
+	auto fseq = RepeatForever::create(rota);
+
+	pPlayer->runAction(fseq);
+
+	pPlayer->RunLevelAction(1);
 }

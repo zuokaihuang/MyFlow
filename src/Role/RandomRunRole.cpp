@@ -67,7 +67,7 @@ void RandomRunRole::beginRandomRun()
 
 		auto srcPosition = this->getPosition();
 		auto distance = srcPosition.getDistance(Vec2(pX, pY));
-		auto moveDuration = distance / 30;
+		auto moveDuration = distance / this->getMoveSpeed();
 
 		//auto direct = (Vec2(pX, pY) - srcPosition).getNormalized();
 		//Vec2 moveSpeed = direct * 2;
@@ -95,6 +95,11 @@ void RandomRunRole::beginRandomRun()
 			NULL);
 		//this->runAction(seq1);
 		this->runAction(seq2);
+
+		auto rota = RotateBy::create(2,360);
+		auto fseq = RepeatForever::create(rota);
+
+		this->runAction(fseq);
 
 	}
 }

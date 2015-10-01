@@ -35,10 +35,14 @@ Enemy* EnemyFactory::create(std::string type)
 	}
 	else if ("Flockfish" == type){
 		ret = SpawnFlockfish::create();
-	}else{
+	}
+	else if ("Food" == type){
+		ret = Food::create();
+	}
+	else{
 		ret = SpawnFish::create();
 	}
-
+	ret->setName(type);
 	return ret;
 }
 

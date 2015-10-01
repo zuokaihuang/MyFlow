@@ -12,7 +12,7 @@ namespace tds{
 
 		void AddPlayer(size_t numbers = 1);
 		void AddNPC(size_t numbers = 2);
-
+		void AddFood(size_t numbers = 10);
 		void AddFish(std::string fishtype, size_t numbers,GLubyte opacity = 255);
 
 		CREATE_FUNC(GameLayer);
@@ -44,7 +44,7 @@ namespace tds{
 
 		void onMoveCallBack(float dt);
 
-		void onStop(){};
+		void onStop();
 
 		bool setAllChildrenVisibleByLayer(int layer, bool visible);
 		bool setAllChildrenOpacityByLayer(int layer, GLubyte opacity, float BlurRadius = 12.0f);

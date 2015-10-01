@@ -16,6 +16,12 @@ namespace tds{
 		
 	};
 
+	class Food : public Enemy
+	{
+	public:
+		CREATE_FUNC(Food);
+		virtual std::string getPath(){ return "Food2.png"; }
+	};
 
 	class SpawnFish : public Enemy
 	{
