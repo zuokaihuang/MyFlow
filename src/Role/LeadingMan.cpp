@@ -24,7 +24,7 @@ LeadingMan::LeadingMan(std::string name)
 
 LeadingMan::~LeadingMan()
 {
-	printf("%s", __func__);
+	//printf("%s", __func__);
 }
 
 bool LeadingMan::init()
@@ -48,4 +48,13 @@ bool LeadingMan::init()
 		ret = true;
 	} while (0);
 	return ret;
+}
+
+void LeadingMan::updateSelf()
+{
+	Vec2 currentP = this->getPosition();
+	Vec2 expectP = currentP + this->getVelocity();
+	Vec2 actualP = expectP;
+
+	this->setPosition(actualP);
 }

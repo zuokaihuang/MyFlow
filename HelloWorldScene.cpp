@@ -1,6 +1,6 @@
 #include "HelloWorldScene.h"
 #include "GameLayer.h"
-#include "SpeciallyEffectLayer.h"
+#include "OperateLayer.h"
 
 USING_NS_CC;
 using namespace tds;
@@ -8,7 +8,7 @@ using namespace tds;
 enum
 {
 	kTagGameLayer = 1,
-	kTagSpeciallyEffectLayer = 2,
+	//kTagSpeciallyEffectLayer = 2,
 	
 };
 
@@ -85,10 +85,10 @@ bool HelloWorld::init()
 	
 	auto gameLayer = GameLayer::create();
 	this->addChild(gameLayer,2, kTagGameLayer);
-
-	auto speciallyeffectLayer = SpeciallyEffectLayer::create();
-	this->addChild(speciallyeffectLayer,1, kTagSpeciallyEffectLayer);
 	
+	auto operateLayer = OperateLayer::create();
+	this->addChild(operateLayer,3);
+
     return true;
 }
 

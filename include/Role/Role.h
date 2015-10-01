@@ -57,7 +57,7 @@ namespace tds{
 		CC_SYNTHESIZE(float ,	m_MaxMoveSpeed,	MaxMoveSpeed);
 		CC_SYNTHESIZE(float , m_MoveSpeed,		MoveSpeed);
 		CC_SYNTHESIZE(float , m_CurrentLevel,	CurrentLevel);
-
+		CC_SYNTHESIZE(cocos2d::Vec2, m_Velocity, Velocity);
 		CC_SYNTHESIZE(float , m_CurrentExperienceValue, CurrentExperienceValue);
 		CC_SYNTHESIZE(float , m_ExperienceValueHold,	ExperienceValueHold);
 

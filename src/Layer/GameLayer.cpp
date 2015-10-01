@@ -5,9 +5,9 @@
 #include "NextLayerNPC.h"
 #include "PreLayerNPC.h"
 #include "Enemy.h"
-
+#include "SpeciallyEffectLayer.h"
 #include "GameManager.h"
-
+#include "Operate.h"
 USING_NS_CC;
 using namespace tds;
 using std::unordered_map;
@@ -18,6 +18,7 @@ enum
 	kTagNextLayerNPC = 2,
 	kTagDrawSignal = 3,
 	kTagPreLayerNPC = 4,
+	kTagSpeciallyEffectLayer = 5,
 };
 
 // < int Layer, Enemy fishType or other >
@@ -116,6 +117,9 @@ bool GameLayer::init()
 
 		readConfigureFile();
 
+		auto speciallyeffectLayer = SpeciallyEffectLayer::create();
+		this->addChild(speciallyeffectLayer, -1, kTagSpeciallyEffectLayer);
+
 		AddPlayer();
 		AddNPC();
 		AddFish("Fish",5);
@@ -128,7 +132,7 @@ bool GameLayer::init()
 
 		std::srand((unsigned)time(nullptr));
 		this->schedule(CC_SCHEDULE_SELECTOR(GameLayer::onConnect), 2.0f);
-		
+		this->scheduleUpdate();
 		ret = true;
 
 	} while (0);
@@ -137,8 +141,10 @@ bool GameLayer::init()
 
 void GameLayer::AddPlayer(size_t numbers)
 {
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	auto player = LeadingMan::create("hzk");
-	player->setPosition(100,200);
+	player->setPosition(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2);
 	player->setScale(0.3f);
 	player->RunLevelAction(1);
 	this->addChild(player,1,kTagPlayer);
@@ -340,18 +346,59 @@ void GameLayer::onMoveCallBack(float dt)
 	g_GameManager->goNextLayer();
 }
 
+void GameLayer::onSPELayerMove(cocos2d::Vec2 direction, float distance)
+{
+	auto speLayer = dynamic_cast<SpeciallyEffectLayer*>(getChildByTag(kTagSpeciallyEffectLayer));
+	Vec2 velocity = direction * (distance < 32 ? 2 : 4);
+	speLayer->setVelocity(velocity);
+}
+
+void GameLayer::onPlayerMove(cocos2d::Vec2 direction, float distance)
+{
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
+
+	Vec2 velocity = direction * (distance < 32 ? 2 : 4);
+
+	pPlayer->setVelocity(velocity);
+
+}
+
+void GameLayer::onSPELayerStop()
+{
+	auto speLayer = dynamic_cast<SpeciallyEffectLayer*>(getChildByTag(kTagSpeciallyEffectLayer));
+	speLayer->setVelocity(Vec2::ZERO);
+}
+
+void GameLayer::onPlayerStop()
+{
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer)); 
+	pPlayer->setVelocity(Vec2::ZERO);
+	//this->onStop();
+}
+
+
+
 void GameLayer::onEnter()
 {
 	BaseLayer::onEnter();
 	auto listener = EventListenerTouchOneByOne::create();
-	listener->setSwallowTouches(true);
+	//listener->setSwallowTouches(true);
 	listener->onTouchBegan = CC_CALLBACK_2(GameLayer::onTouchBegan, this);
-	listener->onTouchMoved = CC_CALLBACK_2(GameLayer::onTouchMoved, this);
+	//listener->onTouchMoved = CC_CALLBACK_2(GameLayer::onTouchMoved, this);
 	listener->onTouchEnded = CC_CALLBACK_2(GameLayer::onTouchEnded, this);
 
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener,this);
+	//_eventDispatcher->addEventListenerWithSceneGraphPriority(listener,this);
 	
-	
+	auto listener2 = EventListenerTouchAllAtOnce::create();
+	//listener2->onTouchesBegan = CC_CALLBACK_2(GameLayer::onTouchBegan, this);
+	listener2->onTouchesMoved = CC_CALLBACK_2(GameLayer::onTouchMoved, this);
+	//_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, this);
+
+	_mouseListener = EventListenerMouse::create();
+	_mouseListener->onMouseMove = CC_CALLBACK_1(GameLayer::onMouseMove, this);
+
+	//_eventDispatcher->addEventListenerWithSceneGraphPriority(_mouseListener, this);
+
 }
 
 void GameLayer::onExit()
@@ -359,13 +406,30 @@ void GameLayer::onExit()
 	BaseLayer::onExit();
 }
 // Add these new methods
-bool GameLayer::onTouchBegan(Touch* touch, Event* event)
+bool GameLayer::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 {
+	
 	return true;
 }
-
-void GameLayer::onTouchMoved(Touch* touch, Event* event)
+void GameLayer::onMouseMove(cocos2d::Event* event)
 {
+	EventMouse* e = (EventMouse*)event;
+
+	auto p = Vec2(e->getCursorX(), e->getCursorY());
+
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
+
+}
+void GameLayer::onTouchMoved(const std::vector<cocos2d::Touch*>& touches, Event* event)
+{
+	auto touch = touches[0];
+
+	auto diff = touch->getDelta().getNormalized();
+	auto node = getChildByTag(kTagPlayer);
+	auto spnode = getChildByTag(kTagSpeciallyEffectLayer);
+	auto currentPos = node->getPosition();
+	node->setPosition(currentPos + diff);
+	spnode->setPosition(spnode->getPosition() + diff);
 }
 
 
@@ -374,17 +438,17 @@ void GameLayer::onTouchEnded(Touch* touch, Event* event)
 	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
 	pPlayer->stopAllActions();
 	pPlayer->RunLevelAction(2);
+	
 	auto touchPoint = touch->getLocation();
 	//touchPoint = this->convertToNodeSpace(touchPoint);
+	
 
-	//pPlayer->setRotation(atan2((touchPoint.x - pPlayer->getPositionX()),
-	//	(touchPoint.y - pPlayer->getPositionY())) * 180 / 3.1415926 + 90);
 	auto rotation = atan2((touchPoint.x - pPlayer->getPositionX()),
 		(touchPoint.y - pPlayer->getPositionY())) * 180 / 3.1415926 + 90;
 	auto rotate = RotateTo::create(0.3, rotation);
 
 	pPlayer->runAction(rotate);
-
+	
 	Point moveDifference = touchPoint - pPlayer->getPosition();
 	float distanceToMove = moveDifference.getLength();
 
@@ -393,9 +457,9 @@ void GameLayer::onTouchEnded(Touch* touch, Event* event)
 	auto MoveAction = Sequence::create(MoveTo::create(moveDuration, touchPoint),
 		CallFunc::create(CC_CALLBACK_0(GameLayer::onStop, this)),
 		NULL);
-	
-	
+
 	pPlayer->runAction(MoveAction);
+	
 }
 
 bool GameLayer::checkCollision(cocos2d::Point p)
@@ -422,4 +486,40 @@ void GameLayer::onStop()
 	pPlayer->runAction(fseq);
 
 	pPlayer->RunLevelAction(1);
+}
+
+void GameLayer::onUpdatePlayer()
+{
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
+	pPlayer->updateSelf();
+}
+
+void GameLayer::onUpdateSpeciallyEffectLayer()
+{
+	auto speLayer = dynamic_cast<SpeciallyEffectLayer*>(this->getChildByTag(kTagSpeciallyEffectLayer));
+	speLayer->updateSelf();
+}
+
+void GameLayer::update(float dt)
+{
+	onUpdatePlayer();
+	onUpdateSpeciallyEffectLayer();
+
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
+	Size winSize = Director::getInstance()->getWinSize();
+
+	auto pos = pPlayer->getPosition();
+
+	int x = MAX(pos.x, winSize.width / 2);
+	int y = MAX(pos.y, winSize.height / 2);
+
+	x = pos.x;
+	y = pos.y;
+
+	Point centerOfView = Vec2(winSize.width / 2, winSize.height / 2);
+
+	Point viewPoint = centerOfView - pos;
+
+	this->setPosition(viewPoint);
+	
 }

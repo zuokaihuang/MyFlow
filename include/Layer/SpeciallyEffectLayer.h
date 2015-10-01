@@ -13,6 +13,9 @@ namespace tds{
 		virtual void onExit();
 		void			onSetColor(bool next_or_pre);
 		CREATE_FUNC(SpeciallyEffectLayer);
+		CC_SYNTHESIZE(cocos2d::Vec2, m_Velocity, Velocity);
+		void updateSelf();
+		
 	private:
 		SpeciallyEffectLayer();
 		~SpeciallyEffectLayer();

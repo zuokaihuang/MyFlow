@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "NextLayerNPC.h"
 #include "PreLayerNPC.h"
+#include "OperateLayer.h"
 
 using namespace tds;
 
@@ -30,6 +31,7 @@ GameManager::~GameManager()
 	CC_SAFE_RELEASE(m_SpeciallyEffectLayer);
 	CC_SAFE_RELEASE(m_GameLayer);
 	CC_SAFE_RELEASE(m_ShowNextLayer);
+	CC_SAFE_RELEASE(m_OperateLayer);
 }
 
 void GameManager::goNextLayer()
@@ -61,4 +63,26 @@ void GameManager::checkCollision(RandomRunRole* pRole)
 		else
 			pRole->removeFromParent();
 	}
+}
+
+
+
+void GameManager::onPlayerMove(cocos2d::Vec2 direction, float distance)
+{
+	m_GameLayer->onPlayerMove(direction, distance);
+}
+
+void GameManager::onSPELayerMove(cocos2d::Vec2 direction, float distance)
+{
+	m_GameLayer->onSPELayerMove(direction, distance);
+}
+
+void GameManager::onSPELayerStop()
+{
+	m_GameLayer->onSPELayerStop();
+}
+
+void GameManager::onPlayerStop()
+{
+	m_GameLayer->onPlayerStop();
 }

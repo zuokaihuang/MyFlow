@@ -12,7 +12,7 @@ namespace tds{
 
 	public:
 		void onMove();
-
+		void updateSelf();
 
 	private:
 		virtual bool init();

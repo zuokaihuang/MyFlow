@@ -96,7 +96,7 @@ void RandomRunRole::beginRandomRun()
 		//this->runAction(seq1);
 		this->runAction(seq2);
 
-		auto rota = RotateBy::create(2,360);
+		auto rota = RotateBy::create(30,360);
 		auto fseq = RepeatForever::create(rota);
 
 		this->runAction(fseq);
