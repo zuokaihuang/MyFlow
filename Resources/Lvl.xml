@@ -1,0 +1,89 @@
+<flOw>
+	
+		<Level bgColor="0x00BFFF" levelSize="200" layer="1">
+			
+		</Level>
+
+		<Level bgColor="0x009EE7" levelSize="200" layer="2">
+			<Food num="10" foodType="1" experienceValueHold="5" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x008DD8" levelSize="200" layer="3">
+			<Food num="15" foodType="1" experienceValueHold="5" foodName="Food"/>
+			<Fish num="1"  hpMax="90" speed="60" experienceValueHold="100" secondTurn="8"/>
+		</Level>
+
+		<Level bgColor="0x007CC9" levelSize="200" layer="4">
+			<Food num="15" foodType="2" experienceValueHold="10" foodName="Food"/>
+			<Fish num="2"  hpMax="90" speed="60" experienceValueHold="100" secondTurn="8"/>
+		</Level>
+
+		<Level bgColor="0x006DBB" levelSize="200" layer="5">
+			<Food num="15" foodType="2" experienceValueHold="10" foodName="Food"/>
+
+		</Level>
+
+		<Level bgColor="0x0066AD" levelSize="200" layer="6">
+			<Food num="10" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x00619E" levelSize="200" layer="7">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+			<Jellyfish num="3"  hpMax="80" speed="100" experienceValueHold="100" secondTurn="6"/>
+		</Level>
+
+		<Level bgColor="0x005C8F" levelSize="200" layer="8">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x005780" levelSize="200" layer="9">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+			<Fish num="2"  hpMax="90" speed="60" experienceValueHold="100" secondTurn="8"/>
+		</Level>
+
+		<Level bgColor="0x00516F" levelSize="200" layer="10">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x024C5F" levelSize="200" layer="11">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x044553" levelSize="200" layer="12">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x074047" levelSize="200" layer="13">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x0A3A3F" levelSize="200" layer="14">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x0E3437" levelSize="200" layer="15">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x0E2E2F" levelSize="200" layer="16">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x0B2626" levelSize="200" layer="17">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x071E1C" levelSize="200" layer="18">
+			<Jellyfish num="3"  hpMax="80" speed="100" experienceValueHold="100" secondTurn="6"/>
+		</Level>
+
+		<Level bgColor="0x051613" levelSize="200" layer="19">
+			<Food num="15" foodType="3" experienceValueHold="15" foodName="Food"/>
+		</Level>
+
+		<Level bgColor="0x03110E" levelSize="200" layer="20">
+			<Food num="15" foodType="3" experienceValueHold="5" foodName="Food"/>
+			<Fish num="1"  hpMax="100" speed="90" experienceValueHold="150" secondTurn="3"/>
+		</Level>
+			
+</flOw>

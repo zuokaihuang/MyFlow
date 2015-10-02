@@ -4,14 +4,40 @@
     <dict>
         <key>frames</key>
         <dict>
+            <key>Food7.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{238,263},{71,71}}</string>
+                <key>offset</key>
+                <string>{-1,2}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{5,2},{71,71}}</string>
+                <key>sourceSize</key>
+                <string>{83,79}</string>
+            </dict>
+            <key>Food8.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{252,2},{71,71}}</string>
+                <key>offset</key>
+                <string>{-1,2}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{5,2},{71,71}}</string>
+                <key>sourceSize</key>
+                <string>{83,79}</string>
+            </dict>
             <key>L4_00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,2},{123,63}}</string>
+                <string>{{2,145},{123,63}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,0},{123,63}}</string>
                 <key>sourceSize</key>
@@ -20,7 +46,7 @@
             <key>L5_00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{70,139},{60,60}}</string>
+                <string>{{397,70},{60,60}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
@@ -33,7 +59,7 @@
             <key>L6_00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,67},{70,70}}</string>
+                <string>{{325,2},{70,70}}</string>
                 <key>offset</key>
                 <string>{-1,-1}</string>
                 <key>rotated</key>
@@ -46,11 +72,11 @@
             <key>L7_00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{127,2},{90,88}}</string>
+                <string>{{186,123},{90,88}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,1},{90,88}}</string>
                 <key>sourceSize</key>
@@ -59,7 +85,7 @@
             <key>Level1_00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{219,2},{34,48}}</string>
+                <string>{{186,215},{34,48}}</string>
                 <key>offset</key>
                 <string>{-19,-5}</string>
                 <key>rotated</key>
@@ -72,7 +98,7 @@
             <key>Level1_01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{74,67},{46,50}}</string>
+                <string>{{222,215},{46,50}}</string>
                 <key>offset</key>
                 <string>{-14,-5}</string>
                 <key>rotated</key>
@@ -85,7 +111,7 @@
             <key>Level1_02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,139},{66,66}}</string>
+                <string>{{397,2},{66,66}}</string>
                 <key>offset</key>
                 <string>{-4,3}</string>
                 <key>rotated</key>
@@ -95,6 +121,110 @@
                 <key>sourceSize</key>
                 <string>{88,88}</string>
             </dict>
+            <key>Level1_new_00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{133,2},{119,117}}</string>
+                <key>offset</key>
+                <string>{0,1}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{119,117}}</string>
+                <key>sourceSize</key>
+                <string>{119,119}</string>
+            </dict>
+            <key>Level1_new_01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{121,266},{119,115}}</string>
+                <key>offset</key>
+                <string>{0,2}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{119,115}}</string>
+                <key>sourceSize</key>
+                <string>{119,119}</string>
+            </dict>
+            <key>Level1_new_02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{67,145},{119,117}}</string>
+                <key>offset</key>
+                <string>{0,1}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{119,117}}</string>
+                <key>sourceSize</key>
+                <string>{119,119}</string>
+            </dict>
+            <key>Level1_new_03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,391},{119,117}}</string>
+                <key>offset</key>
+                <string>{0,1}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{119,117}}</string>
+                <key>sourceSize</key>
+                <string>{119,119}</string>
+            </dict>
+            <key>Level1_new_04.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,270},{119,117}}</string>
+                <key>offset</key>
+                <string>{0,1}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{119,117}}</string>
+                <key>sourceSize</key>
+                <string>{119,119}</string>
+            </dict>
+            <key>Lvl1_00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{218,387},{101,95}}</string>
+                <key>offset</key>
+                <string>{0,-3}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{9,15},{101,95}}</string>
+                <key>sourceSize</key>
+                <string>{119,119}</string>
+            </dict>
+            <key>Lvl1_01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{121,387},{101,95}}</string>
+                <key>offset</key>
+                <string>{0,-3}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{9,15},{101,95}}</string>
+                <key>sourceSize</key>
+                <string>{119,119}</string>
+            </dict>
+            <key>spwap_00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,2},{129,141}}</string>
+                <key>offset</key>
+                <string>{-6,2}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{8,7},{129,141}}</string>
+                <key>sourceSize</key>
+                <string>{157,159}</string>
+            </dict>
         </dict>
         <key>metadata</key>
         <dict>
@@ -103,9 +233,9 @@
             <key>realTextureFileName</key>
             <string>Player.pvr.ccz</string>
             <key>size</key>
-            <string>{256,256}</string>
+            <string>{512,512}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:ecea625e6131bc499187a2e298db6875$</string>
+            <string>$TexturePacker:SmartUpdate:fa59d4f90c356ce041971d822e536caf$</string>
             <key>textureFileName</key>
             <string>Player.pvr.ccz</string>
         </dict>
