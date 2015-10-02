@@ -6,11 +6,14 @@ USING_NS_CC;
 
 Role::Role(std::string name)
 :m_Name(name),
+m_MaxHP(0),
+m_CurrentHP(0),
 m_MaxMoveSpeed(90),
 m_MoveSpeed(30),
 m_CurrentLevel(1),
 m_CurrentExperienceValue(0),
 m_ExperienceValueHold(0),
+m_TurnCooldown(0),
 m_pIdleAction(nullptr),
 m_pWalkAction(nullptr),
 m_pL1Action(nullptr),

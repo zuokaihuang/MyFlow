@@ -28,10 +28,7 @@ unordered_map<int, Vector<Enemy*> > JellyfishFishMap;
 unordered_map<int, Vector<Enemy*> > FlockfishMap;
 unordered_map<int, Vector<BaseNPC*> > NPCMap;
 
-const int MAXLAYER = 21;
-const int MAXFOODNUMBERS = 11;
-const int MAXFISHNUMBERS = 6;
-const int MAXJELLYFISHNUMBERS = 3;
+
 
 const float  OPACITY = 20;/*Opacity*/
 
@@ -63,19 +60,28 @@ GameLayer::~GameLayer()
 
 void GameLayer::readConfigureFile(std::string path)
 {
+	auto MAXLAYER = g_GameManager->m_levelConfigure.size() + 1; // we +1 becouse layer begin with 1 not 0
+	
 	// just for debug
 
-
-
 	for (auto layer = 1; layer != MAXLAYER; ++layer){
-
-		//add Enemy 
+		 
+		//add Enemy
+		auto MAXFISHNUMBERS = atoi(g_GameManager->m_levelEnemyConfigure[layer]["Fish"]["num"].c_str());
 		for (auto num = 0; num != MAXFISHNUMBERS; ++num){
-			//auto		fish = EnemyFactory::create("Fish");
-			//FishMap[layer].pushBack(fish);
+			auto		fish = EnemyFactory::create("Fish");
+
+			fish->initFromConfigure(g_GameManager->m_levelEnemyConfigure[layer]["Fish"]);
+
+			FishMap[layer].pushBack(fish);
 		}
+
+		auto MAXJELLYFISHNUMBERS = atoi(g_GameManager->m_levelEnemyConfigure[layer]["Jellyfish"]["num"].c_str());
 		for (auto num = 0; num != MAXJELLYFISHNUMBERS; ++num){
 			auto		jellyfish = EnemyFactory::create("Jellyfish");
+
+			jellyfish->initFromConfigure(g_GameManager->m_levelEnemyConfigure[layer]["Jellyfish"]);
+
 			JellyfishFishMap[layer].pushBack(jellyfish);
 		}
 
@@ -98,8 +104,11 @@ void GameLayer::readConfigureFile(std::string path)
 		//add Food
 		//	{
 		//	}
+		auto MAXFOODNUMBERS = atoi(g_GameManager->m_levelEnemyConfigure[layer]["Food"]["num"].c_str());
+		auto foodType = atoi(g_GameManager->m_levelEnemyConfigure[layer]["Food"]["foodType"].c_str());
+
 		for (auto num = 0; num != MAXFOODNUMBERS; ++num){
-			auto food = EnemyFactory::create("Food");
+			auto food = Food::create(foodType);
 			FoodMap[layer].pushBack(food);
 		}
 
@@ -145,8 +154,8 @@ void GameLayer::AddPlayer(size_t numbers)
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	auto player = LeadingMan::create("hzk");
 	player->setPosition(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2);
-	player->setScale(0.3f);
-	player->RunLevelAction(1);
+	player->setScale(0.5f);
+	//player->RunLevelAction(1);
 	this->addChild(player,1,kTagPlayer);
 }
 
@@ -164,6 +173,7 @@ void GameLayer::AddNPC(size_t numbers)
 	*/
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto MAXLAYER = g_GameManager->m_levelConfigure.size() + 1;
 	for (auto layer = 1; layer != MAXLAYER; ++layer){
 
 		for (auto npc : NPCMap[layer])
@@ -182,6 +192,7 @@ void GameLayer::AddFood(size_t numbers)
 {
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto MAXLAYER = g_GameManager->m_levelConfigure.size() + 1;
 	for (auto layer = 1; layer != MAXLAYER; ++layer){
 
 		for (auto food : FoodMap[layer])
@@ -200,7 +211,7 @@ void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
 {
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
+	auto MAXLAYER = g_GameManager->m_levelConfigure.size() + 1;
 	for (size_t layer = 1; layer != MAXLAYER; ++layer){
 
 		for (auto fish : FishMap[layer]){	
@@ -343,7 +354,7 @@ void GameLayer::PreLayer()
 
 void GameLayer::onMoveCallBack(float dt)
 {
-	g_GameManager->goNextLayer();
+	//g_GameManager->goNextLayer();
 }
 
 void GameLayer::onSPELayerMove(cocos2d::Vec2 direction, float distance)
@@ -374,6 +385,13 @@ void GameLayer::onPlayerStop()
 	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer)); 
 	pPlayer->setVelocity(Vec2::ZERO);
 	//this->onStop();
+}
+
+void GameLayer::onPlayerRotation(double rotation)
+{
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
+	//pPlayer->runAction(RotateTo::create(0.3,rotation));
+	pPlayer->setRotation(rotation);
 }
 
 

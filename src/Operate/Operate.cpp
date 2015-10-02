@@ -88,7 +88,11 @@ void Joystick::updateJoystick(Touch* touch)
 	else {
 		m_pJoystick->setPosition(start + (direction * m_pJoystickr / 2));
 	}
+	auto rotation = atan2((hit.x - start.x),
+		(hit.y - start.y)) * 180 / 3.1415926 + 90;
+	//auto rotate = RotateTo::create(0.3, rotation);
 
+	g_GameManager->onPlayerRotation(rotation);
 	g_GameManager->onPlayerMove(direction, distance);
 	g_GameManager->onSPELayerMove(direction, distance);
 }
@@ -102,8 +106,8 @@ void Joystick::onTouchesBegan(const vector<Touch*>& touches, Event *unused_event
 	{
 		this->showJoystick();
 		updateJoystick(touch);
-		CCLOG("***************");
-		CCLOG("update touch:%f %f", touch->getLocation().x, touch->getLocation().y);
+		//CCLOG("***************");
+		//CCLOG("update touch:%f %f", touch->getLocation().x, touch->getLocation().y);
 		m_bisTouchDown = true;
 		return;
 	}

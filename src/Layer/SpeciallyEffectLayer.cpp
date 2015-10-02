@@ -17,8 +17,7 @@ Color4B level_bgColor[] =
 	{ 0x00, 0x5C, 0x8F, 255 },
 	{ 0x00, 0x57, 0x80, 255 },
 	{ 0x00, 0x51, 0x6F, 255 }
-};
-
+}; 
 
 SpeciallyEffectLayer::SpeciallyEffectLayer():
 m_nextLayerColorIndex(0)
@@ -39,7 +38,7 @@ bool SpeciallyEffectLayer::init()
 	{
 		CC_BREAK_IF(!BaseLayer::init());
 		//this->setColor(Color3B(0x00, 0xBF, 0xFF));
-
+		this->initBgColorFromConfigure();
 
 	
 
@@ -49,15 +48,60 @@ bool SpeciallyEffectLayer::init()
 	return ret;
 }
 
-void SpeciallyEffectLayer::onSetColor(bool next_or_pre)
+void SpeciallyEffectLayer::initBgColorFromConfigure()
 {
-	auto index = next_or_pre ? ++m_nextLayerColorIndex : --m_nextLayerColorIndex;
-	//test
-	if (m_nextLayerColorIndex == 9 || m_nextLayerColorIndex == -1){
-		m_nextLayerColorIndex = 0;
+	const auto &map = g_GameManager->m_levelConfigure;
+	const auto maxlayer = map.size();
+	GLubyte _r =0 , _g=0, _b=0, _a=255;
+	const char* str_rgba = "0xffffffff";
+	for (auto layer = 1; layer != maxlayer; ++layer)
+	{
+		unsigned char rgb_array[3] = {};
+		int  rgb_array_index = 0;
+
+		//str_rgba = map.find(layer)->second.find("bgColor")->second.c_str();
+		auto layer_iter = map.find(layer);
+		if (layer_iter != map.end() ){
+			auto bg_iter = layer_iter->second.find("bgColor");
+			if (bg_iter != layer_iter->second.end()){
+				str_rgba = bg_iter->second.c_str();
+			}
+		}
+
+		auto rgbindex = 2;
+		unsigned char hight, low;
+
+		for (; rgbindex != 8;rgbindex +=2){
+
+			hight = tolower(str_rgba[rgbindex]);
+			if (hight > '9'){
+				hight = (10 + (tolower(hight) - 'a'));
+			}
+			else
+				hight = (tolower(hight) - '0');
+
+			hight *= 16;
+
+			low = tolower(str_rgba[rgbindex + 1]);
+			if (low > '9')
+			{
+				low = (10 + (tolower(low) - 'a'));
+			}else
+				low = (tolower(low) - '0');
+
+			rgb_array[rgb_array_index++] = hight + low;
+		}
+
+		_level_BgColor[layer] = Color3B(rgb_array[0], rgb_array[1], rgb_array[2]);
+		
 	}
 
-	m_layer->setColor(Color3B(level_bgColor[ (index==-1) ? 0 : index]));
+}
+
+
+void SpeciallyEffectLayer::onSetColor(int layer)
+{
+	m_layer->setColor(_level_BgColor[layer]);
 }
 
 void SpeciallyEffectLayer::onEnter()

@@ -31,9 +31,9 @@ bool LeadingMan::init()
 {
 	bool ret = false;
 	do{
-		this->initWithSpriteFrameName("L5_00.png");
+		this->initWithSpriteFrameName("L4_00.png");
 		
-		Animation *L1 = Role::CreateNormalAnimation("Level1_%02d.png",3,10);
+		Animation *L1 = Role::CreateNormalAnimation("Level1_new_%02d.png",5,1);
 		this->setL1Action(RepeatForever::create(Animate::create(L1)));
 
 		Animation *L2 = Role::CreateNormalAnimation("L5_%02d.png",1, 10);

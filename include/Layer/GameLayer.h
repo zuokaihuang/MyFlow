@@ -35,6 +35,7 @@ namespace tds{
 		void onPlayerMove(cocos2d::Vec2 direction, float distance);
 		void onSPELayerStop();
 		void onPlayerStop();
+		void onPlayerRotation(double rotation);
 		void onUpdatePlayer();
 		void onUpdateSpeciallyEffectLayer();
 

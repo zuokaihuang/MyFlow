@@ -22,6 +22,62 @@ bool Enemy::init(std::string type)
 }
 
 */
+Food* Food::create(int foodType)
+{
+	Food* food = new Food(foodType);
+
+	if (food && food->init())
+	{
+		food->autorelease();
+		return food;
+	}
+	else{
+		delete food;
+		food = NULL;
+		return NULL;
+	}
+}
+
+std::string  Food::getPath()
+{
+	const char* formatStr = "Food%d.png";
+
+	const char* path = String::createWithFormat(formatStr, m_FoodType)->getCString();
+
+	return std::string(path);
+}
+
+void Enemy::initFromConfigure(const unordered_map<std::string, std::string>& prop_map)
+{
+	auto prop = prop_map.find("speed");
+	String prop_value;
+
+	if (prop != prop_map.end()){
+		prop_value = prop->second;
+		this->setMoveSpeed(prop_value.floatValue());
+	}
+
+	prop = prop_map.find("hpMax");
+	if (prop != prop_map.end()){
+		prop_value = prop->second;
+		this->setMaxHP(prop_value.floatValue());
+	}
+
+	prop = prop_map.find("experienceValueHold");
+	if (prop != prop_map.end()){
+		prop_value = prop->second;
+		this->setExperienceValueHold(prop_value.floatValue());
+	}
+
+	prop = prop_map.find("secondTurn");
+	if (prop != prop_map.end()){
+		prop_value = prop->second;
+		this->setTurnCooldown(prop_value.intValue());
+	}
+
+}
+
+
 
 Enemy* EnemyFactory::create(std::string type)
 {
@@ -35,11 +91,7 @@ Enemy* EnemyFactory::create(std::string type)
 	}
 	else if ("Flockfish" == type){
 		ret = SpawnFlockfish::create();
-	}
-	else if ("Food" == type){
-		ret = Food::create();
-	}
-	else{
+	}else{
 		ret = SpawnFish::create();
 	}
 	ret->setName(type);

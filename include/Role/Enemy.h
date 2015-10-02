@@ -3,6 +3,8 @@
 #define _ENEMY_H__
 
 #include "RandomRunRole.h"
+#include <unordered_map>
+using std::unordered_map;
 
 namespace tds{
 
@@ -12,6 +14,8 @@ namespace tds{
 		//CREATE_FUNC(Enemy);
 		//virtual bool init(std::string type = "");
 		//virtual std::string getPath(){ return ""; }
+		void initFromConfigure(const unordered_map<std::string, std::string>& prop_map);
+
 	private:
 		
 	};
@@ -19,8 +23,11 @@ namespace tds{
 	class Food : public Enemy
 	{
 	public:
-		CREATE_FUNC(Food);
-		virtual std::string getPath(){ return "Food2.png"; }
+		Food(int fooType = 2) :Enemy(), m_FoodType(fooType){}
+		static Food* create(int foodType = 2);
+		CC_SYNTHESIZE(int,m_FoodType,FoodType);
+		virtual std::string getPath();
+		//virtual bool init();
 	};
 
 	class SpawnFish : public Enemy

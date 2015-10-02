@@ -52,15 +52,15 @@ namespace tds{
 		virtual void RunLevelAction(int level);	
 		
 		// the fllowing will read from server 
-		//CC_SYNTHESIZE(float , m_MaxHP,			MaxHP);
-		//CC_SYNTHESIZE(float , m_CurrentHP,		CurrentHP);
+		CC_SYNTHESIZE(float , m_MaxHP,			MaxHP);
+		CC_SYNTHESIZE(float , m_CurrentHP,		CurrentHP);
 		CC_SYNTHESIZE(float ,	m_MaxMoveSpeed,	MaxMoveSpeed);
 		CC_SYNTHESIZE(float , m_MoveSpeed,		MoveSpeed);
 		CC_SYNTHESIZE(float , m_CurrentLevel,	CurrentLevel);
 		CC_SYNTHESIZE(cocos2d::Vec2, m_Velocity, Velocity);
 		CC_SYNTHESIZE(float , m_CurrentExperienceValue, CurrentExperienceValue);
 		CC_SYNTHESIZE(float , m_ExperienceValueHold,	ExperienceValueHold);
-
+		CC_SYNTHESIZE(int,    m_TurnCooldown,			TurnCooldown);
 		
 
 	};
