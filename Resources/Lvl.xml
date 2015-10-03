@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <flOw>
 	
 		<Level bgColor="0x00BFFF" levelSize="200" layer="1">
@@ -5,12 +6,12 @@
 		</Level>
 
 		<Level bgColor="0x009EE7" levelSize="200" layer="2">
-			<Food num="10" foodType="1" experienceValueHold="5" foodName="Food"/>
+			<Food num="10"  foodType="1" experienceValueHold="5" foodName="Food"/>
 		</Level>
 
 		<Level bgColor="0x008DD8" levelSize="200" layer="3">
 			<Food num="15" foodType="1" experienceValueHold="5" foodName="Food"/>
-			<Fish num="1"  hpMax="90" speed="60" experienceValueHold="100" secondTurn="8"/>
+			<Fish num="1"  hpMax="90"  experienceValueHold="100" secondTurn="8"/>
 		</Level>
 
 		<Level bgColor="0x007CC9" levelSize="200" layer="4">
