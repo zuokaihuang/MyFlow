@@ -62,7 +62,7 @@ namespace tds{
 		CC_SYNTHESIZE(float , m_ExperienceValueHold,	ExperienceValueHold);
 		CC_SYNTHESIZE(int,    m_TurnCooldown,			TurnCooldown);
 		
-
+		void onUpdatePlayerExperienceValue(float value);
 	};
 
 

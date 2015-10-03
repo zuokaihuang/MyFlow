@@ -17,15 +17,14 @@
 #include "OperateLayer.h"
 
 #include "tinyxml2/tinyxml2.h"
-
+ 
 using namespace tds;
 
 DECLARE_SINGLETON_MEMBER(GameManager);
 
 GameManager::GameManager()
 {
-	initXMLConfigure(
-		FileUtils::getInstance()->fullPathForFilename("Lvl.xml").c_str());
+
 }
 
 
@@ -36,18 +35,96 @@ GameManager::~GameManager()
 	CC_SAFE_RELEASE(m_ShowNextLayer);
 	CC_SAFE_RELEASE(m_OperateLayer);
 }
-
-bool GameManager::initXMLConfigure(std::string path)
+bool GameManager::isFileExist(const char* pFileName)
 {
 	bool ret = false;
+	if (!pFileName) return ret;
+//#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+	std::string filePath = FileUtils::getInstance()->getWritablePath();
 
-	tinyxml2::XMLDocument* doc = new tinyxml2::XMLDocument();
+	//auto label = Label::createWithTTF("WritablePath=>"+filePath, "fonts/Marker Felt.ttf", 24);
+	//label->setPosition(Vec2(200,200));
+	//m_GameLayer->addChild(label, 1);
 
-	tinyxml2::XMLError errorID = doc->LoadFile(path.c_str());
+	filePath += pFileName;
 
+	FILE *fp = fopen(filePath.c_str(), "r");
+	if (fp){
+		fclose(fp);
+		ret = true;
+	}
+	return ret;
+//#else
+
+//#endif
+}
+
+void GameManager::copyFileToWritablePath(const char* pFileName)
+{
+	std::string filePath = FileUtils::getInstance()->fullPathForFilename(pFileName);
+
+	ssize_t len = 0;
+	unsigned char *data = NULL;
+	data = FileUtils::getInstance()->getFileData(filePath.c_str(), "r", &len);
+
+	std::string destPath = FileUtils::getInstance()->getWritablePath();
+
+	destPath += pFileName;
+
+	//auto label = Label::createWithTTF("destPath=> "+destPath, "fonts/Marker Felt.ttf", 24);
+	//label->setPosition(Vec2(200, 300));
+	//m_GameLayer->addChild(label, 1);
+
+	FILE *fp = fopen(destPath.c_str(), "w+");
+	fwrite(data, sizeof(char), len, fp);
+	fflush(fp);
+	fclose(fp);
+
+	if (data)
+		delete[]data;
+	data = NULL;
+}
+
+int GameManager::initXMLConfigure(std::string filename)
+{
+	std::string fileName = filename;
+	bool ret = this->isFileExist(fileName.c_str());
+
+
+	// if ret == false , it mean that the lvl.xml is not exist , we can downlown from server. or read from [assets/]
+	// if 
+	ssize_t size;
+	char *pFileContent = NULL;
+	tinyxml2::XMLDocument* doc = NULL;
+	if ( ret == false ){
+
+		//
+		//auto label = Label::createWithTTF(filePath, "fonts/Marker Felt.ttf", 24);
+		//label->setPosition(Vec2(100,200));
+		//m_GameLayer->addChild(label, 1);
+	
+		// downlown from server ? or copy from default Resource ?
+		copyFileToWritablePath(filename.c_str());
+
+
+	}
+	std::string filePath = FileUtils::getInstance()->getWritablePath();
+
+	//pFileContent = (char*)FileUtils::getInstance()->getFileData(fileName, "r", &size);
+	
+
+	filePath  +=  filename;
+	//
+	//auto label = Label::createWithTTF("filePath=> " + filePath, "fonts/Marker Felt.ttf", 24);
+	//label->setPosition(Vec2(200, 400));
+	//m_GameLayer->addChild(label, 1);
+
+	doc = new tinyxml2::XMLDocument();
+	tinyxml2::XMLError errorID =  doc->LoadFile(filePath.c_str());   //doc->Parse(pFileContent,size);
+	
 	if (errorID != 0){
 		CCLOG("Parse xml Error");
-		return ret;
+		return errorID;
 	}
 
 	tinyxml2::XMLElement* root = doc->RootElement();
@@ -115,9 +192,14 @@ bool GameManager::initXMLConfigure(std::string path)
 		}
 	}
 
+	if (doc)
+		delete doc;
 
-	delete doc;
-	return ret;
+	if (pFileContent)
+		delete []pFileContent;
+	doc = NULL;
+	pFileContent = NULL;
+	return 0;
 }
 
 
@@ -135,7 +217,7 @@ void GameManager::checkCollision(RandomRunRole* pRole)
 {
 	auto rolePosition = pRole->getPosition();
 
-	if(m_GameLayer->checkCollision(rolePosition))
+	if (m_GameLayer->checkCollision(rolePosition, pRole->getContentSize().width / 2))
 	{
 		if ("NextLayerNPC" == pRole->getName()){
 			log("%s", "NextLayerNPC");
@@ -147,8 +229,10 @@ void GameManager::checkCollision(RandomRunRole* pRole)
 			m_GameLayer->PreLayer();
 
 		}
-		else
+		else{
 			pRole->removeFromParent();
+			m_GameLayer->onUpdatePlayerExperienceValue(pRole->getExperienceValueHold());
+		}
 	}
 }
 

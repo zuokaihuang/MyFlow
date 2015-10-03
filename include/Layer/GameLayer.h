@@ -26,7 +26,7 @@ namespace tds{
 		virtual bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
 		virtual void onTouchMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
 		virtual void onTouchEnded(cocos2d::Touch* touch,cocos2d::Event* event);
-		bool checkCollision(cocos2d::Point p);
+		bool checkCollision(cocos2d::Point p,float radius);
 
 		void NextLayer();
 		void PreLayer();
@@ -36,9 +36,9 @@ namespace tds{
 		void onSPELayerStop();
 		void onPlayerStop();
 		void onPlayerRotation(double rotation);
-		void onUpdatePlayer();
-		void onUpdateSpeciallyEffectLayer();
-
+		void onUpdatePlayer(float duration);
+		void onUpdateSpeciallyEffectLayer(float duration);
+		void onUpdatePlayerExperienceValue(float value);
 	private:
 		GameLayer();
 		~GameLayer();
@@ -49,7 +49,6 @@ namespace tds{
 		void onConnect(float dt);
 		void RemoveSignal(float dt);
 
-
 		void onMoveCallBack(float dt);
 
 		void onStop();
@@ -58,6 +57,9 @@ namespace tds{
 		bool setAllChildrenOpacityByLayer(int layer, GLubyte opacity, float BlurRadius = 12.0f);
 		cocos2d::EventListenerMouse* _mouseListener;
 		void onMouseMove(cocos2d::Event* event);
+
+		bool checknpcOutoffPlayerVision(cocos2d::Point p);
+		cocos2d::Vec2 getIntersection_NPC_and_SPELayerRect(cocos2d::Rect rect, cocos2d::Point p);
 	};
 
 

@@ -32,7 +32,9 @@ namespace tds {
 	public:
 		GameManager();
 		~GameManager();
-		bool initXMLConfigure(std::string path);
+		bool isFileExist(const char* pFileName);
+		void copyFileToWritablePath(const char* pFileName);
+		int initXMLConfigure(std::string filename);
 	public:
 		SpeciallyEffectLayer	*m_SpeciallyEffectLayer;
 		GameLayer			*m_GameLayer;

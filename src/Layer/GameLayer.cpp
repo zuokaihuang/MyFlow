@@ -46,13 +46,13 @@ const float  OPACITY = 20;/*Opacity*/
 
 GameLayer::GameLayer()
 :m_PreLayer(0), ///0 mean nothing layer 
- m_CurrentLayer(1),
- m_NextLayer(2)
+m_CurrentLayer(1),
+m_NextLayer(2)
 {
 	g_GameManager->m_GameLayer = this;
 	this->retain();
 }
-
+ 
 GameLayer::~GameLayer()
 {
 	this->unschedule(CC_SCHEDULE_SELECTOR(GameLayer::onConnect));
@@ -93,7 +93,7 @@ void GameLayer::readConfigureFile(std::string path)
 		else if (MAXLAYER-1 == layer){
 			auto preNPC = PreLayerNPC::create();
 			NPCMap[layer].pushBack(preNPC);
-		}
+		} 
 		else {
 			auto nextNPC = NextLayerNPC::create();
 			NPCMap[layer].pushBack(nextNPC);
@@ -106,9 +106,11 @@ void GameLayer::readConfigureFile(std::string path)
 		//	}
 		auto MAXFOODNUMBERS = atoi(g_GameManager->m_levelEnemyConfigure[layer]["Food"]["num"].c_str());
 		auto foodType = atoi(g_GameManager->m_levelEnemyConfigure[layer]["Food"]["foodType"].c_str());
+		auto experienceValueHold = atof(g_GameManager->m_levelEnemyConfigure[layer]["Food"]["experienceValueHold"].c_str());
 
 		for (auto num = 0; num != MAXFOODNUMBERS; ++num){
 			auto food = Food::create(foodType);
+			food->setExperienceValueHold(experienceValueHold);
 			FoodMap[layer].pushBack(food);
 		}
 
@@ -121,13 +123,18 @@ bool GameLayer::init()
 	do{
 
 		CC_BREAK_IF(!BaseLayer::init());
+		int r = 0;
+
+		r = g_GameManager->initXMLConfigure("lvl.xml");
 
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Player.plist", "Player.pvr.ccz");
-
+		 
 		readConfigureFile();
 
 		auto speciallyeffectLayer = SpeciallyEffectLayer::create();
+		speciallyeffectLayer->initBgColorFromConfigure();
 		this->addChild(speciallyeffectLayer, -1, kTagSpeciallyEffectLayer);
+
 
 		AddPlayer();
 		AddNPC();
@@ -154,7 +161,7 @@ void GameLayer::AddPlayer(size_t numbers)
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	auto player = LeadingMan::create("hzk");
 	player->setPosition(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2);
-	player->setScale(0.5f);
+	//player->setScale(0.5f);
 	//player->RunLevelAction(1);
 	this->addChild(player,1,kTagPlayer);
 }
@@ -197,10 +204,10 @@ void GameLayer::AddFood(size_t numbers)
 
 		for (auto food : FoodMap[layer])
 		{
-			auto pX = origin.x + (visibleSize.width) * CCRANDOM_0_1();
-			auto pY = origin.y + (visibleSize.height) * CCRANDOM_0_1();
+			auto pX = visibleSize.width *  (3 - CCRANDOM_0_1() * 6);
+			auto pY = visibleSize.height * (3 - CCRANDOM_0_1() * 6);
 			food->setPosition(pX, pY);
-			food->setScale(0.3f);
+			//food->setScale(0.3f);
 			food->setVisible(false);
 			this->addChild(food);
 		}
@@ -216,10 +223,10 @@ void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
 
 		for (auto fish : FishMap[layer]){	
 
-			auto pX = origin.x + (visibleSize.width) * CCRANDOM_0_1();
-			auto pY = origin.y + (visibleSize.height) * CCRANDOM_0_1();
+			auto pX = visibleSize.width *  (3 - CCRANDOM_0_1() * 6);
+			auto pY = visibleSize.height * (3 - CCRANDOM_0_1() * 6);
 			fish->setPosition(Vec2(pX, pY));
-			fish->setScale(0.3f);
+			//fish->setScale(0.3f);
 			//fish->setOpacity(opacity);
 			fish->setVisible(false);
 			this->addChild(fish,1,9);
@@ -227,16 +234,65 @@ void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
 
 		for (auto jellyfish : JellyfishFishMap[layer]){
 
-			auto pX = origin.x + (visibleSize.width) * CCRANDOM_0_1();
-			auto pY = origin.y + (visibleSize.height) * CCRANDOM_0_1();
+			auto pX = visibleSize.width *  (3 - CCRANDOM_0_1() * 6);
+			auto pY = visibleSize.height * (3 - CCRANDOM_0_1() * 6);
 			jellyfish->setPosition(Vec2(pX, pY));
-			jellyfish->setScale(0.3f);
+			//jellyfish->setScale(0.3f);
 			//fish->setOpacity(opacity);
 			jellyfish->setVisible(false);
 			this->addChild(jellyfish, 1, 8);
 		}
 
 	}
+}
+
+bool GameLayer::checknpcOutoffPlayerVision(cocos2d::Point p)
+{
+	bool ret = false;
+	auto speLayer = dynamic_cast<SpeciallyEffectLayer*>(getChildByTag(kTagSpeciallyEffectLayer));
+	auto spep = speLayer->getPosition();
+
+	auto rect = Rect(spep.x,
+		spep.y,
+		speLayer->getContentSize().width,
+		speLayer->getContentSize().height);
+
+	ret =  rect.containsPoint(p);
+
+	return ret;
+}
+
+cocos2d::Vec2 GameLayer::getIntersection_NPC_and_SPELayerRect(cocos2d::Rect rect ,cocos2d::Point p)
+{
+
+	/*
+			D---------C
+			|		 |
+			A---------B
+	*/
+	Vec2 A(rect.getMinX(),rect.getMinY());
+	Vec2 B(rect.getMaxX(),rect.getMinY());
+	Vec2 C(rect.getMaxX(),rect.getMaxY());
+	Vec2 D(rect.getMinX(),rect.getMaxY());
+
+	Vec2 PlayerP = getChildByTag(kTagPlayer)->getPosition();
+	Vec2 npcP = p;
+
+	Vec2 point;
+	if ( Vec2::isSegmentIntersect(A, B, PlayerP,p)){
+		point = Vec2::getIntersectPoint(A,B,PlayerP,p);
+	}
+	else if (Vec2::isSegmentIntersect(B, C, PlayerP, p)){
+		point = Vec2::getIntersectPoint(B,C, PlayerP, p);
+	}
+	else if (Vec2::isSegmentIntersect(C, D, PlayerP, p)){
+		point = Vec2::getIntersectPoint(C, D, PlayerP, p);
+	}
+	else if (Vec2::isSegmentIntersect(A, D, PlayerP, p)){
+		point = Vec2::getIntersectPoint(A, D, PlayerP, p);
+	}
+
+	return point;
 }
 
 
@@ -248,17 +304,28 @@ void GameLayer::onConnect(float dt)
 		if ("NextLayerNPC" == npc->getName())
 			npcPosition = npc->getPosition();
 	}
+	if (!checknpcOutoffPlayerVision(npcPosition)){
 
-	auto drawSignal = DrawNode::create();
-	this->addChild(drawSignal,0, kTagDrawSignal);
-	drawSignal->drawLine(npcPosition, playerPositon, Color4F::BLUE);
-	drawSignal->drawCircle(npcPosition, 5, 0, 360, false, Color4F::BLUE);
-	//auto scaleby = ScaleBy::create(1, 10);
-	//auto action2 = Sequence::create(
-	//	scaleby,
-	//	FadeOut::create(1), CallFunc::create(std::bind(&GameLayer::RemoveSignal,this,dt)), nullptr);
-	//drawSignal->runAction(action2);
-	this->scheduleOnce(CC_SCHEDULE_SELECTOR(GameLayer::RemoveSignal),0.1f);
+		auto speLayer = dynamic_cast<SpeciallyEffectLayer*>(getChildByTag(kTagSpeciallyEffectLayer));
+		auto spep = speLayer->getPosition();
+		auto rect = Rect(spep.x,
+			spep.y,
+			speLayer->getContentSize().width,
+			speLayer->getContentSize().height);
+
+		Point center = getIntersection_NPC_and_SPELayerRect(rect, npcPosition);
+		
+		auto drawSignal = DrawNode::create();
+		this->addChild(drawSignal, 0, kTagDrawSignal);
+		//drawSignal->drawLine(npcPosition, playerPositon, Color4F::BLUE);
+		drawSignal->drawCircle(center,50, 0, 360, false, Color4F::RED);
+		auto scaleto = ScaleTo::create(1, 10);
+		auto action2 = Sequence::create(
+			scaleto,
+			CallFunc::create(std::bind(&GameLayer::RemoveSignal,this,dt)), nullptr);
+		//drawSignal->runAction(action2);
+		this->scheduleOnce(CC_SCHEDULE_SELECTOR(GameLayer::RemoveSignal), 0.3f);
+	}
 }
 
 void GameLayer::RemoveSignal(float dt)
@@ -384,13 +451,14 @@ void GameLayer::onPlayerStop()
 {
 	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer)); 
 	pPlayer->setVelocity(Vec2::ZERO);
-	//this->onStop();
+	
 }
 
 void GameLayer::onPlayerRotation(double rotation)
 {
 	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
-	//pPlayer->runAction(RotateTo::create(0.3,rotation));
+	//pPlayer->stopAllActions();
+	//pPlayer->runAction(RotateTo::create(0.08f,rotation));
 	pPlayer->setRotation(rotation);
 }
 
@@ -480,12 +548,12 @@ void GameLayer::onTouchEnded(Touch* touch, Event* event)
 	
 }
 
-bool GameLayer::checkCollision(cocos2d::Point p)
+bool GameLayer::checkCollision(cocos2d::Point p, float radius)
 {
 	bool ret = false;
 	auto pPlayer = this->getChildByTag(kTagPlayer);
 	auto diff = pPlayer->getPosition() - p;
-	if (diff.getLength() <= 5.00f){
+	if (diff.getLength() - radius <= 1.00f){
 		log(" diff=>%f", diff.getLength());
 		ret = true;
 	}
@@ -506,38 +574,48 @@ void GameLayer::onStop()
 	pPlayer->RunLevelAction(1);
 }
 
-void GameLayer::onUpdatePlayer()
+void GameLayer::onUpdatePlayer(float duration)
 {
+
 	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
-	pPlayer->updateSelf();
+	pPlayer->updateSelf( duration);
+
 }
 
-void GameLayer::onUpdateSpeciallyEffectLayer()
+void GameLayer::onUpdateSpeciallyEffectLayer(float duration)
 {
 	auto speLayer = dynamic_cast<SpeciallyEffectLayer*>(this->getChildByTag(kTagSpeciallyEffectLayer));
-	speLayer->updateSelf();
+	speLayer->updateSelf( duration);
+}
+
+void GameLayer::onUpdatePlayerExperienceValue(float value)
+{
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
+	pPlayer->onUpdatePlayerExperienceValue(value);
 }
 
 void GameLayer::update(float dt)
 {
-	onUpdatePlayer();
-	onUpdateSpeciallyEffectLayer();
+		// this value can read from xml file
+		auto duration = 1.5f;
+		onUpdatePlayer(duration);
+		onUpdateSpeciallyEffectLayer(duration);
 
-	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
-	Size winSize = Director::getInstance()->getWinSize();
+		auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
+		Size winSize = Director::getInstance()->getWinSize();
 
-	auto pos = pPlayer->getPosition();
+		auto pos = pPlayer->getPosition();
 
-	int x = MAX(pos.x, winSize.width / 2);
-	int y = MAX(pos.y, winSize.height / 2);
+		int x = MAX(pos.x, winSize.width / 2);
+		int y = MAX(pos.y, winSize.height / 2);
 
-	x = pos.x;
-	y = pos.y;
+		x = pos.x;
+		y = pos.y;
 
-	Point centerOfView = Vec2(winSize.width / 2, winSize.height / 2);
+		Point centerOfView = Vec2(winSize.width / 2, winSize.height / 2);
 
-	Point viewPoint = centerOfView - pos;
+		Point viewPoint = centerOfView - pos;
 
-	this->setPosition(viewPoint);
-	
+		this->setPosition(viewPoint);
+
 }

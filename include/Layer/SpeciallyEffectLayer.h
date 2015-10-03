@@ -15,15 +15,15 @@ namespace tds{
 		void			onSetColor(int layer);
 		CREATE_FUNC(SpeciallyEffectLayer);
 		CC_SYNTHESIZE(cocos2d::Vec2, m_Velocity, Velocity);
-		void updateSelf();
-		
+		void updateSelf(float duration);
+		void initBgColorFromConfigure();
 	private:
 		SpeciallyEffectLayer();
 		~SpeciallyEffectLayer();
 		virtual bool init();
 
 
-		void initBgColorFromConfigure();
+		
 		unordered_map<int, cocos2d::Color3B> _level_BgColor;
 
 		cocos2d::LayerColor* m_layer;

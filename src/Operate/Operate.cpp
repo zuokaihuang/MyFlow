@@ -89,12 +89,13 @@ void Joystick::updateJoystick(Touch* touch)
 		m_pJoystick->setPosition(start + (direction * m_pJoystickr / 2));
 	}
 	auto rotation = atan2((hit.x - start.x),
-		(hit.y - start.y)) * 180 / 3.1415926 + 90;
+		(hit.y - start.y)) * 180 / M_PI + 90;
 	//auto rotate = RotateTo::create(0.3, rotation);
 
-	g_GameManager->onPlayerRotation(rotation);
+	
 	g_GameManager->onPlayerMove(direction, distance);
 	g_GameManager->onSPELayerMove(direction, distance);
+	g_GameManager->onPlayerRotation(rotation);
 }
 
 

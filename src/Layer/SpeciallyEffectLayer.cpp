@@ -38,7 +38,7 @@ bool SpeciallyEffectLayer::init()
 	{
 		CC_BREAK_IF(!BaseLayer::init());
 		//this->setColor(Color3B(0x00, 0xBF, 0xFF));
-		this->initBgColorFromConfigure();
+		//this->initBgColorFromConfigure();
 
 	
 
@@ -50,18 +50,17 @@ bool SpeciallyEffectLayer::init()
 
 void SpeciallyEffectLayer::initBgColorFromConfigure()
 {
-	const auto &map = g_GameManager->m_levelConfigure;
-	const auto maxlayer = map.size();
-	GLubyte _r =0 , _g=0, _b=0, _a=255;
+	//const auto &map = g_GameManager->m_levelConfigure;
+	const auto maxlayer = g_GameManager->m_levelConfigure.size() + 1;
 	const char* str_rgba = "0xffffffff";
 	for (auto layer = 1; layer != maxlayer; ++layer)
 	{
-		unsigned char rgb_array[3] = {};
+		char rgb_array[3] = {};
 		int  rgb_array_index = 0;
-
+		str_rgba = "0xffffffff";
 		//str_rgba = map.find(layer)->second.find("bgColor")->second.c_str();
-		auto layer_iter = map.find(layer);
-		if (layer_iter != map.end() ){
+		auto layer_iter = g_GameManager->m_levelConfigure.find(layer);
+		if (layer_iter != g_GameManager->m_levelConfigure.end()){
 			auto bg_iter = layer_iter->second.find("bgColor");
 			if (bg_iter != layer_iter->second.end()){
 				str_rgba = bg_iter->second.c_str();
@@ -69,7 +68,7 @@ void SpeciallyEffectLayer::initBgColorFromConfigure()
 		}
 
 		auto rgbindex = 2;
-		unsigned char hight, low;
+		char hight, low;
 
 		for (; rgbindex != 8;rgbindex +=2){
 
@@ -101,6 +100,7 @@ void SpeciallyEffectLayer::initBgColorFromConfigure()
 
 void SpeciallyEffectLayer::onSetColor(int layer)
 {
+	//m_layer->setColor(Color3B(level_bgColor[layer]));
 	m_layer->setColor(_level_BgColor[layer]);
 }
 
@@ -123,12 +123,13 @@ void SpeciallyEffectLayer::onExit()
 	BaseLayer::onExit();
 }
 
-void SpeciallyEffectLayer::updateSelf()
+void SpeciallyEffectLayer::updateSelf(float duration)
 {
 	Vec2 currentP = this->getPosition();
 	Vec2 expectP = currentP + this->getVelocity();
 	Vec2 actualP = expectP;
-
-	this->setPosition(actualP);
+	auto moveto = MoveTo::create(duration, actualP);
+	this->runAction(moveto);
+	//this->setPosition(actualP);
 }
 

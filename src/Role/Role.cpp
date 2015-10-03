@@ -66,6 +66,12 @@ Animation* Role::CreateNormalAnimation(const char* formatStr,
 	}
 	return Animation::createWithSpriteFrames(pFrames, 1.0f / fps);
 }
+void Role::onUpdatePlayerExperienceValue(float value)
+{
+	this->m_CurrentExperienceValue += value;
+
+}
+
 
 void Role::RunIdleAction()
 {

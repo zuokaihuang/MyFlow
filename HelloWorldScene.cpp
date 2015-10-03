@@ -1,6 +1,6 @@
 #include "HelloWorldScene.h"
-#include "GameLayer.h"
-#include "OperateLayer.h"
+#include "include/Layer/GameLayer.h"
+#include "include/Layer/OperateLayer.h"
 
 USING_NS_CC;
 using namespace tds;

@@ -45,16 +45,19 @@ bool LeadingMan::init()
 		Animation *L4 = Role::CreateNormalAnimation("L4_%02d.png",1, 10);
 		this->setL4Action(RepeatForever::create(Animate::create(L4)));
 
+		this->setAnchorPoint(Vec2(0.0f,0.5f));
+
 		ret = true;
 	} while (0);
 	return ret;
 }
 
-void LeadingMan::updateSelf()
+void LeadingMan::updateSelf(float duration)
 {
 	Vec2 currentP = this->getPosition();
 	Vec2 expectP = currentP + this->getVelocity();
 	Vec2 actualP = expectP;
-
-	this->setPosition(actualP);
+	auto moveto = MoveTo::create(duration, actualP);
+	this->runAction(moveto);
+	//this->setPosition(actualP);
 }

@@ -60,8 +60,9 @@ void RandomRunRole::beginRandomRun()
 		//
 		Size visibleSize = Director::getInstance()->getVisibleSize();
 		Vec2 origin = Director::getInstance()->getVisibleOrigin();
-		auto pX = origin.x + (visibleSize.width  ) * CCRANDOM_0_1();
-		auto pY = origin.y + (visibleSize.height ) * CCRANDOM_0_1();
+
+		auto pX = visibleSize.width *  (4 - CCRANDOM_0_1() * 8);
+		auto pY = visibleSize.height * (4 - CCRANDOM_0_1() * 8);
 
 		
 
