@@ -47,8 +47,7 @@ void RandomRunRole::update(float dt)
 
 void RandomRunRole::checkCollision()
 {
-	if (this->isVisible() && this->getOpacity()> 20)
-		g_GameManager->checkCollision(this);
+	g_GameManager->checkCollision(this);
 }
 
 void RandomRunRole::beginRandomRun()

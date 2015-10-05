@@ -6,9 +6,13 @@
 
 namespace tds{
 
+	class BaseNPC;
+
 	class GameLayer : public BaseLayer
 	{
 	public:
+
+		const static float  OPACITY;/*Opacity*/
 
 		void AddPlayer(size_t numbers = 1);
 		void AddNPC(size_t numbers = 2);
@@ -47,7 +51,9 @@ namespace tds{
 		void readConfigureFile(std::string path = "");
 
 		void onConnect(float dt);
-		void RemoveSignal(float dt);
+		void drawSignalIfNPCisOutoffVision(const BaseNPC* npc);
+		void RemoveSignalNext(float dt);
+		void RemoveSignalPre(float dt);
 
 		void onMoveCallBack(float dt);
 

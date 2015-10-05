@@ -215,23 +215,26 @@ void GameManager::goPreLayer()
 
 void GameManager::checkCollision(RandomRunRole* pRole)
 {
-	auto rolePosition = pRole->getPosition();
+	if (pRole->isVisible() && pRole->getOpacity() > GameLayer::OPACITY){
 
-	if (m_GameLayer->checkCollision(rolePosition, pRole->getContentSize().width / 2))
-	{
-		if ("NextLayerNPC" == pRole->getName()){
-			log("%s", "NextLayerNPC");
-			m_GameLayer->NextLayer();
+		auto rolePosition = pRole->getPosition();
 
-		}
-		else if ("PreLayerNPC" == pRole->getName()){
-			log("%s", "PreLayerNPC");
-			m_GameLayer->PreLayer();
+		if (m_GameLayer->checkCollision(rolePosition, pRole->getContentSize().width / 2))
+		{
+			if ("NextLayerNPC" == pRole->getName()){
+				log("%s", "NextLayerNPC");
+				m_GameLayer->NextLayer();
 
-		}
-		else{
-			pRole->removeFromParent();
-			m_GameLayer->onUpdatePlayerExperienceValue(pRole->getExperienceValueHold());
+			}
+			else if ("PreLayerNPC" == pRole->getName()){
+				log("%s", "PreLayerNPC");
+				m_GameLayer->PreLayer();
+
+			}
+			else{
+				pRole->removeFromParent();
+				m_GameLayer->onUpdatePlayerExperienceValue(pRole->getExperienceValueHold());
+			}
 		}
 	}
 }

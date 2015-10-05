@@ -16,9 +16,10 @@ enum
 {
 	kTagPlayer = 1,
 	kTagNextLayerNPC = 2,
-	kTagDrawSignal = 3,
-	kTagPreLayerNPC = 4,
-	kTagSpeciallyEffectLayer = 5,
+	kTagDrawSignalNext = 3,
+	kTagDrawSignalPre = 4,
+	kTagPreLayerNPC = 5,
+	kTagSpeciallyEffectLayer = 6,
 };
 
 // < int Layer, Enemy fishType or other >
@@ -30,7 +31,7 @@ unordered_map<int, Vector<BaseNPC*> > NPCMap;
 
 
 
-const float  OPACITY = 20;/*Opacity*/
+const float GameLayer::OPACITY = 18;
 
 /*******************************************
  // logic layer
@@ -259,7 +260,7 @@ bool GameLayer::checknpcOutoffPlayerVision(cocos2d::Point p)
 
 	ret =  rect.containsPoint(p);
 
-	return ret;
+	return !ret;
 }
 
 cocos2d::Vec2 GameLayer::getIntersection_NPC_and_SPELayerRect(cocos2d::Rect rect ,cocos2d::Point p)
@@ -298,40 +299,64 @@ cocos2d::Vec2 GameLayer::getIntersection_NPC_and_SPELayerRect(cocos2d::Rect rect
 
 void GameLayer::onConnect(float dt)
 {
-	auto playerPositon = getChildByTag(kTagPlayer)->getPosition();
-	Vec2 npcPosition;
-	for (auto npc : NPCMap[m_CurrentLayer]){
-		if ("NextLayerNPC" == npc->getName())
-			npcPosition = npc->getPosition();
-	}
-	if (!checknpcOutoffPlayerVision(npcPosition)){
-
-		auto speLayer = dynamic_cast<SpeciallyEffectLayer*>(getChildByTag(kTagSpeciallyEffectLayer));
-		auto spep = speLayer->getPosition();
-		auto rect = Rect(spep.x,
-			spep.y,
-			speLayer->getContentSize().width,
-			speLayer->getContentSize().height);
-
-		Point center = getIntersection_NPC_and_SPELayerRect(rect, npcPosition);
-		
-		auto drawSignal = DrawNode::create();
-		this->addChild(drawSignal, 0, kTagDrawSignal);
-		//drawSignal->drawLine(npcPosition, playerPositon, Color4F::BLUE);
-		drawSignal->drawCircle(center,50, 0, 360, false, Color4F::RED);
-		auto scaleto = ScaleTo::create(1, 10);
-		auto action2 = Sequence::create(
-			scaleto,
-			CallFunc::create(std::bind(&GameLayer::RemoveSignal,this,dt)), nullptr);
-		//drawSignal->runAction(action2);
-		this->scheduleOnce(CC_SCHEDULE_SELECTOR(GameLayer::RemoveSignal), 0.3f);
-	}
+	//auto playerPositon = getChildByTag(kTagPlayer)->getPosition();
+	auto npc = NPCMap[m_CurrentLayer].at(0);
+	if (npc)
+		drawSignalIfNPCisOutoffVision(npc);
 }
 
-void GameLayer::RemoveSignal(float dt)
+void GameLayer::drawSignalIfNPCisOutoffVision(const BaseNPC* npc)
 {
-	this->getChildByTag(kTagDrawSignal)->removeFromParent();
-	//NextLayer();
+		if (checknpcOutoffPlayerVision(npc->getPosition()))
+		{
+			auto speLayer = dynamic_cast<SpeciallyEffectLayer*>(getChildByTag(kTagSpeciallyEffectLayer));
+			auto spep = speLayer->getPosition();
+			auto rect = Rect(spep.x,
+					spep.y,
+					speLayer->getContentSize().width,
+					speLayer->getContentSize().height);
+			Point center = getIntersection_NPC_and_SPELayerRect(rect, npc->getPosition());
+			auto drawSignalNext = DrawNode::create();
+			Color4F color;
+			if ("NextLayerNPC" == npc->getName())
+			{
+				color = Color4F::RED;
+				this->addChild(drawSignalNext, 0, kTagDrawSignalNext);
+			}
+			else
+			{
+				color = Color4F::WHITE;
+				this->addChild(drawSignalNext, 0, kTagDrawSignalPre);
+			}
+				
+			for (int c = 1; c != 6; ++c)
+				drawSignalNext->drawCircle(center, 10 * c, 0, 360, false, color);	
+		}
+		if ("NextLayerNPC" == npc->getName())
+			this->scheduleOnce(CC_SCHEDULE_SELECTOR(GameLayer::RemoveSignalNext), 0.3f);
+		else
+			this->scheduleOnce(CC_SCHEDULE_SELECTOR(GameLayer::RemoveSignalPre), 0.3f);
+}
+
+void GameLayer::RemoveSignalNext(float dt)
+{
+	auto drawnext = dynamic_cast<DrawNode*>(this->getChildByTag(kTagDrawSignalNext));
+	if (drawnext){
+		drawnext->removeFromParent();
+	}
+	if (2 == NPCMap[m_CurrentLayer].size())
+	{
+		auto npc = NPCMap[m_CurrentLayer].at(1);
+		if (npc)
+			drawSignalIfNPCisOutoffVision(npc);
+	}
+}
+void GameLayer::RemoveSignalPre(float dt)
+{
+	auto drawpre = dynamic_cast<DrawNode*>(this->getChildByTag(kTagDrawSignalPre));
+	if (drawpre){
+		drawpre->removeFromParent();
+	}
 }
 
 bool GameLayer::setAllChildrenVisibleByLayer(int layer, bool visible)
