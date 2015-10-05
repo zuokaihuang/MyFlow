@@ -126,7 +126,7 @@ bool GameLayer::init()
 		CC_BREAK_IF(!BaseLayer::init());
 		int r = 0;
 
-		r = g_GameManager->initXMLConfigure("lvl.xml");
+		r = g_GameManager->initXMLConfigure("Lvl.xml");
 
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Player.plist", "Player.pvr.ccz");
 		 
