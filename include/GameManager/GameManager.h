@@ -26,6 +26,7 @@ namespace tds {
 	class GameLayer;
 	class RandomRunRole;
 	class OperateLayer;
+	class EnergyPoints;
 
 	class GameManager : public Singleton<GameManager>{
 
@@ -46,7 +47,7 @@ namespace tds {
 		void goPreLayer();
 
 		void checkCollision(RandomRunRole* pRole);
-
+		void checkCollisionWithEnergyPoints(EnergyPoints* pEnergyPoint);
 		void onPlayerMove(cocos2d::Vec2 direction, float distance);
 		void onSPELayerMove(cocos2d::Vec2 direction, float distance);
 		void onPlayerStop();

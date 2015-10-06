@@ -40,7 +40,7 @@ Food* Food::create(int foodType)
 
 std::string  Food::getPath()
 {
-	const char* formatStr = "Food%d.png";
+	const char* formatStr = "images/food/Food%d.png";
 
 	const char* path = String::createWithFormat(formatStr, m_FoodType)->getCString();
 
@@ -76,6 +76,18 @@ void Enemy::initFromConfigure(const unordered_map<std::string, std::string>& pro
 	}
 
 }
+
+void Enemy::onEnter()
+{
+	RandomRunRole::onEnter();	
+
+}
+
+void Enemy::onExit()
+{
+	RandomRunRole::onExit();
+}
+
 
 
 

@@ -1,5 +1,6 @@
 
 #include "Role.h"
+#include "RoleEnergyPoints.h"
 //#include "../../include/Role/Role.h"
 using namespace tds;
 USING_NS_CC;
@@ -11,6 +12,8 @@ m_CurrentHP(0),
 m_MaxMoveSpeed(90),
 m_MoveSpeed(30),
 m_CurrentLevel(1),
+m_LastVelocity(Vec2(-1,0)),
+m_InWhichLayer(0),
 m_CurrentExperienceValue(0),
 m_ExperienceValueHold(0),
 m_TurnCooldown(0),
@@ -33,6 +36,7 @@ Role::~Role()
 	CC_SAFE_RELEASE_NULL(m_pL2Action);
 	CC_SAFE_RELEASE_NULL(m_pL3Action);
 	CC_SAFE_RELEASE_NULL(m_pL4Action);
+	_kHPVector.clear();
 }
 
 Animation* Role::CreateAttackAnimation(const char* formatStr,
@@ -117,4 +121,31 @@ void Role::RunLevelAction(int level)
 	}
 
 	this->runAction(action);
+}
+void Role::addHP(tds::EnergyPoints* pHP)
+{
+	pHP->setWhoOwnerThisEnergyPonit(this);
+	this->retain();
+	_kHPVector.pushBack(pHP);
+}
+
+void Role::setVisible(bool visible)
+{
+	for (auto hp : _kHPVector)
+		hp->setVisible(visible);
+	Sprite::setVisible(visible);
+}
+
+void Role::setOpacity(GLubyte opacity)
+{
+	for (auto hp : _kHPVector)
+		hp->setOpacity(opacity);
+	Sprite::setOpacity(opacity);
+}
+
+void Role::removeFromParent()
+{
+	for (auto hp : _kHPVector)
+		hp->removeFromParent();
+	Sprite::removeFromParent();
 }

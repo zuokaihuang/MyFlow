@@ -21,7 +21,7 @@ bool NextLayerNPC::init()
 	bool ret = false;
 
 	do{
-		this->initWithFile("NextLayerNPC.png");
+		this->initWithFile("images/npc/NextLayerNPC.png");
 		this->scheduleUpdate();
 		ret = true;
 	} while (0);

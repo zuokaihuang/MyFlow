@@ -18,8 +18,8 @@ bool Joystick::init()
 	bool ret = false;
 	do {
 		CC_BREAK_IF(!Sprite::init());
-		m_pJoystickBg = Sprite::create("joystickBg.png");
-		m_pJoystick = Sprite::create("joystick.png");
+		m_pJoystickBg = Sprite::create("images/player/joystickBg.png");
+		m_pJoystick = Sprite::create("images/player/joystick.png");
 
 		m_pJoystickBg->setScale(1.4f);
 		m_pJoystick->setScale(1.4f);

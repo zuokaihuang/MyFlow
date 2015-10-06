@@ -1,5 +1,6 @@
 
 #include "LeadingMan.h"
+#include "RoleEnergyPoints.h"
 using namespace tds;
 USING_NS_CC;
 
@@ -59,5 +60,14 @@ void LeadingMan::updateSelf(float duration)
 	Vec2 actualP = expectP;
 	auto moveto = MoveTo::create(duration, actualP);
 	this->runAction(moveto);
+	auto r = this->getContentSize().width / 2;
+	auto sita = this->getRotation();
+	auto nol = Vec2(sin(sita),cos(sita));
+	for (auto hp : _kHPVector){
+		auto no = -this->getLastVelocity().getNormalized();
+		auto v = Vec2( this->getContentSize().width*no,
+			this->getContentSize().height*no);
+		hp->setPosition(this->getPosition() - v);
+	}
 	//this->setPosition(actualP);
 }

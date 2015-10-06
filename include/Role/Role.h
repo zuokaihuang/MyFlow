@@ -14,6 +14,7 @@ namespace tds{
 		ACTION_STATE_L3,
 		ACTION_STATE_L4,
 	};
+	class EnergyPoints;
 
 	class Role : public cocos2d::Sprite
 	{
@@ -21,7 +22,7 @@ namespace tds{
 		Role(std::string name = "");
 		virtual ~Role();
 
-
+		cocos2d::Vector<tds::EnergyPoints*> _kHPVector;
 	protected:
 		static cocos2d::Animation* CreateNormalAnimation(const char* formatStr,
 			unsigned int frameCount,
@@ -57,11 +58,17 @@ namespace tds{
 		CC_SYNTHESIZE(float ,	m_MaxMoveSpeed,	MaxMoveSpeed);
 		CC_SYNTHESIZE(float , m_MoveSpeed,		MoveSpeed);
 		CC_SYNTHESIZE(float , m_CurrentLevel,	CurrentLevel);
+		CC_SYNTHESIZE(int,	m_InWhichLayer,  InWhichLayer);
 		CC_SYNTHESIZE(cocos2d::Vec2, m_Velocity, Velocity);
+		CC_SYNTHESIZE(cocos2d::Vec2, m_LastVelocity, LastVelocity);
 		CC_SYNTHESIZE(float , m_CurrentExperienceValue, CurrentExperienceValue);
 		CC_SYNTHESIZE(float , m_ExperienceValueHold,	ExperienceValueHold);
 		CC_SYNTHESIZE(int,    m_TurnCooldown,			TurnCooldown);
-		
+
+		virtual void setVisible(bool visible);
+		virtual void setOpacity(GLubyte opacity);
+		virtual void removeFromParent();
+		virtual void addHP(tds::EnergyPoints* pHP);
 		void onUpdatePlayerExperienceValue(float value);
 	};
 

@@ -14,6 +14,9 @@ namespace tds{
 		//CREATE_FUNC(Enemy);
 		//virtual bool init(std::string type = "");
 		//virtual std::string getPath(){ return ""; }
+		void onEnter();
+		void onExit();
+		
 		void initFromConfigure(const unordered_map<std::string, std::string>& prop_map);
 
 	private:
@@ -34,21 +37,21 @@ namespace tds{
 	{
 	public:
 		CREATE_FUNC(SpawnFish);
-		virtual std::string getPath(){ return "Fish2.png"; }
+		virtual std::string getPath(){ return "images/monster/Fish2.png"; }
 	};
 
 	class SpawnJellyfish : public Enemy
 	{
 	public:
 		CREATE_FUNC(SpawnJellyfish);
-		virtual std::string getPath(){ return "Jellyfish2.png"; }
+		virtual std::string getPath(){ return "images/monster/Jellyfish2.png"; }
 	};
 
 	class SpawnFlockfish : public Enemy
 	{
 	public:
 		CREATE_FUNC(SpawnFlockfish);
-		virtual std::string getPath(){ return "Flockfish.png"; }
+		virtual std::string getPath(){ return "images/monster/Flockfish.png"; }
 	};
 
 

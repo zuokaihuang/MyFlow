@@ -15,6 +15,7 @@
 #include "NextLayerNPC.h"
 #include "PreLayerNPC.h"
 #include "OperateLayer.h"
+#include "Role/RoleEnergyPoints.h"
 
 #include "tinyxml2/tinyxml2.h"
  
@@ -61,7 +62,8 @@ bool GameManager::isFileExist(const char* pFileName)
 
 void GameManager::copyFileToWritablePath(const char* pFileName)
 {
-	std::string filePath = FileUtils::getInstance()->fullPathForFilename(pFileName);
+	std::string configFile = "configs/" + std::string(pFileName);
+	std::string filePath = FileUtils::getInstance()->fullPathForFilename(configFile);
 
 	ssize_t len = 0;
 	unsigned char *data = NULL;
@@ -128,7 +130,10 @@ int GameManager::initXMLConfigure(std::string filename)
 	}
 
 	tinyxml2::XMLElement* root = doc->RootElement();
-
+	if (!root){
+		CCLOG("the xml file maybe empty!!");
+		return -1;
+	}
 	auto layer_index = 1;
 
 	for (tinyxml2::XMLElement* chd = root->FirstChildElement(); chd; chd = chd->NextSiblingElement())
@@ -218,7 +223,6 @@ void GameManager::checkCollision(RandomRunRole* pRole)
 	if (pRole->isVisible() && pRole->getOpacity() > GameLayer::OPACITY){
 
 		auto rolePosition = pRole->getPosition();
-
 		if (m_GameLayer->checkCollision(rolePosition, pRole->getContentSize().width / 2))
 		{
 			if ("NextLayerNPC" == pRole->getName()){
@@ -232,14 +236,26 @@ void GameManager::checkCollision(RandomRunRole* pRole)
 
 			}
 			else{
-				pRole->removeFromParent();
-				m_GameLayer->onUpdatePlayerExperienceValue(pRole->getExperienceValueHold());
+				//pRole->removeFromParent();
+				//m_GameLayer->onUpdatePlayerExperienceValue(pRole->getExperienceValueHold());
 			}
 		}
 	}
 }
 
-
+void GameManager::checkCollisionWithEnergyPoints(EnergyPoints* pEnergyPoint)
+{
+	if (pEnergyPoint->isVisible() && pEnergyPoint->getOpacity() > GameLayer::OPACITY){
+		auto rolePosition = pEnergyPoint->getPosition();
+		if (m_GameLayer->checkCollisionWithEnergyPoints(pEnergyPoint))
+		{
+			
+			//if (who->getName()!="hzk")
+				
+		}
+				
+	}
+}
 
 void GameManager::onPlayerMove(cocos2d::Vec2 direction, float distance)
 {

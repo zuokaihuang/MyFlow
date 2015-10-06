@@ -7,6 +7,7 @@
 namespace tds{
 
 	class BaseNPC;
+	class EnergyPoints;
 
 	class GameLayer : public BaseLayer
 	{
@@ -31,7 +32,7 @@ namespace tds{
 		virtual void onTouchMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
 		virtual void onTouchEnded(cocos2d::Touch* touch,cocos2d::Event* event);
 		bool checkCollision(cocos2d::Point p,float radius);
-
+		bool checkCollisionWithEnergyPoints(EnergyPoints* pEnergyPoint);
 		void NextLayer();
 		void PreLayer();
 

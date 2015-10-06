@@ -8,6 +8,7 @@
 #include "SpeciallyEffectLayer.h"
 #include "GameManager.h"
 #include "Operate.h"
+#include "Role/RoleEnergyPoints.h"
 USING_NS_CC;
 using namespace tds;
 using std::unordered_map;
@@ -71,7 +72,7 @@ void GameLayer::readConfigureFile(std::string path)
 		auto MAXFISHNUMBERS = atoi(g_GameManager->m_levelEnemyConfigure[layer]["Fish"]["num"].c_str());
 		for (auto num = 0; num != MAXFISHNUMBERS; ++num){
 			auto		fish = EnemyFactory::create("Fish");
-
+			fish->setInWhichLayer(layer);
 			fish->initFromConfigure(g_GameManager->m_levelEnemyConfigure[layer]["Fish"]);
 
 			FishMap[layer].pushBack(fish);
@@ -82,7 +83,7 @@ void GameLayer::readConfigureFile(std::string path)
 			auto		jellyfish = EnemyFactory::create("Jellyfish");
 
 			jellyfish->initFromConfigure(g_GameManager->m_levelEnemyConfigure[layer]["Jellyfish"]);
-
+			jellyfish->setInWhichLayer(layer);
 			JellyfishFishMap[layer].pushBack(jellyfish);
 		}
 
@@ -111,6 +112,7 @@ void GameLayer::readConfigureFile(std::string path)
 
 		for (auto num = 0; num != MAXFOODNUMBERS; ++num){
 			auto food = Food::create(foodType);
+			food->setInWhichLayer(layer);
 			food->setExperienceValueHold(experienceValueHold);
 			FoodMap[layer].pushBack(food);
 		}
@@ -126,9 +128,9 @@ bool GameLayer::init()
 		CC_BREAK_IF(!BaseLayer::init());
 		int r = 0;
 
-		r = g_GameManager->initXMLConfigure("lvl.xml");
+		r = g_GameManager->initXMLConfigure("Lvl.xml");
 
-		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Player.plist", "Player.pvr.ccz");
+		SpriteFrameCache::getInstance()->addSpriteFramesWithFile("images/player/Player.plist", "images/player/Player.pvr.ccz");
 		 
 		readConfigureFile();
 
@@ -164,6 +166,14 @@ void GameLayer::AddPlayer(size_t numbers)
 	player->setPosition(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 2);
 	//player->setScale(0.5f);
 	//player->RunLevelAction(1);
+
+	auto hp = EnergyPoints::create();
+	hp->setScale(0.3f);
+	hp->setPosition(player->getPositionX() + player->getContentSize().width / 2, player->getPositionY());
+	this->addChild(hp, 2, 11);
+	player->addHP(hp);
+
+
 	this->addChild(player,1,kTagPlayer);
 }
 
@@ -205,8 +215,8 @@ void GameLayer::AddFood(size_t numbers)
 
 		for (auto food : FoodMap[layer])
 		{
-			auto pX = visibleSize.width *  (3 - CCRANDOM_0_1() * 6);
-			auto pY = visibleSize.height * (3 - CCRANDOM_0_1() * 6);
+			auto pX = visibleSize.width *  CCRANDOM_0_1();// (3 - *6);
+			auto pY = visibleSize.height * CCRANDOM_0_1();// (3 - *6);
 			food->setPosition(pX, pY);
 			//food->setScale(0.3f);
 			food->setVisible(false);
@@ -224,19 +234,28 @@ void GameLayer::AddFish(std::string fishtype, size_t numbers, GLubyte opacity)
 
 		for (auto fish : FishMap[layer]){	
 
-			auto pX = visibleSize.width *  (3 - CCRANDOM_0_1() * 6);
-			auto pY = visibleSize.height * (3 - CCRANDOM_0_1() * 6);
+			auto pX = visibleSize.width * CCRANDOM_0_1();// (3 - CCRANDOM_0_1() * 6);
+			auto pY = visibleSize.height * CCRANDOM_0_1();// (3 - CCRANDOM_0_1() * 6);
+			
 			fish->setPosition(Vec2(pX, pY));
 			//fish->setScale(0.3f);
 			//fish->setOpacity(opacity);
+			
+			
+			auto hp = EnergyPoints::create();
+			hp->setScale(0.3f);
+			hp->setPosition(pX+fish->getContentSize().width,pY);
+			this->addChild(hp,2,11);
+			fish->addHP(hp);
+
 			fish->setVisible(false);
 			this->addChild(fish,1,9);
 		}
 
 		for (auto jellyfish : JellyfishFishMap[layer]){
 
-			auto pX = visibleSize.width *  (3 - CCRANDOM_0_1() * 6);
-			auto pY = visibleSize.height * (3 - CCRANDOM_0_1() * 6);
+			auto pX = visibleSize.width * CCRANDOM_0_1();// (3 - *6);
+			auto pY = visibleSize.height * CCRANDOM_0_1(); //(3 -  * 6);
 			jellyfish->setPosition(Vec2(pX, pY));
 			//jellyfish->setScale(0.3f);
 			//fish->setOpacity(opacity);
@@ -461,7 +480,7 @@ void GameLayer::onPlayerMove(cocos2d::Vec2 direction, float distance)
 	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
 
 	Vec2 velocity = direction * (distance < 32 ? 2 : 4);
-
+	pPlayer->setLastVelocity(velocity);
 	pPlayer->setVelocity(velocity);
 
 }
@@ -474,7 +493,8 @@ void GameLayer::onSPELayerStop()
 
 void GameLayer::onPlayerStop()
 {
-	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer)); 
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
+	pPlayer->setLastVelocity(pPlayer->getVelocity());
 	pPlayer->setVelocity(Vec2::ZERO);
 	
 }
@@ -585,6 +605,43 @@ bool GameLayer::checkCollision(cocos2d::Point p, float radius)
 	return ret;
 }
 
+bool GameLayer::checkCollisionWithEnergyPoints(EnergyPoints* pEnergyPoint)
+{
+	bool ret = false;
+
+	// with player 
+	auto pPlayer = dynamic_cast<LeadingMan*>(this->getChildByTag(kTagPlayer));
+	if ( pPlayer && (pPlayer->getPosition() - pEnergyPoint->getPosition()).getLength() < pEnergyPoint->getContentSize().width / 2)
+	{
+		auto who = pEnergyPoint->getWhoOwnerThisEnergyPonit();
+		if (who == pPlayer)return ret;
+		who->removeFromParent();
+	}
+
+	//with current Layer Enemy
+	for (auto fish : FishMap[m_CurrentLayer])
+	{
+		if ( fish && (fish->getPosition() - pEnergyPoint->getPosition()).getLength() < pEnergyPoint->getContentSize().width / 2)
+		{
+			auto who = pEnergyPoint->getWhoOwnerThisEnergyPonit();
+			if (who == fish || who == pPlayer)return ret;
+				who->removeFromParent();
+		}
+	}
+	for (auto jellyfish : JellyfishFishMap[m_CurrentLayer])
+	{
+		if (jellyfish && (jellyfish->getPosition() - pEnergyPoint->getPosition()).getLength() < pEnergyPoint->getContentSize().width / 2)
+		{
+			auto who = pEnergyPoint->getWhoOwnerThisEnergyPonit();
+			if (who == jellyfish || who == pPlayer)return ret;
+			who->removeFromParent();
+		}
+	}
+
+
+	return ret;
+}
+
 void GameLayer::onStop()
 {
 	
@@ -642,5 +699,5 @@ void GameLayer::update(float dt)
 		Point viewPoint = centerOfView - pos;
 
 		this->setPosition(viewPoint);
-
+		
 }

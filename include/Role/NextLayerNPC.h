@@ -10,7 +10,7 @@ namespace tds{
 	{
 	public:
 		CREATE_FUNC(NextLayerNPC);
-		virtual std::string getPath(){ return "NextLayerNPC.png"; }
+		virtual std::string getPath(){ return "images/npc/NextLayerNPC.png"; }
 
 	private:
 		virtual bool init();

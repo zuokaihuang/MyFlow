@@ -2,7 +2,7 @@
 #include "RandomRunRole.h"
 #include "CircleMoveAction.h"
 #include "GameManager.h"
-
+#include "RoleEnergyPoints.h"
 using namespace tds;
 USING_NS_CC;
 
@@ -27,11 +27,12 @@ bool RandomRunRole::init(std::string name)
 			//auto target = Sprite::create(path);
 			//target->setPosition(200.0f,200.0f);
 			//this->addChild(target,0,1);
-
+			this->setAnchorPoint(Vec2(0.0f,0.5f));
 		}
 		else
 			return ret;
-
+		//auto sp = Sprite::create("circel.png");
+		//this->addChild(sp,0,10);
 		this->scheduleUpdate();
 		ret = true;
 	} while (0);
@@ -41,8 +42,15 @@ bool RandomRunRole::init(std::string name)
 
 void RandomRunRole::update(float dt)
 {
+	for (auto hp : _kHPVector){
+		auto no = -this->getLastVelocity().getNormalized();
+		auto v = Vec2(this->getContentSize().width*no,
+			this->getContentSize().height*no);
+		hp->setPosition(this->getPosition() - v);
+	}
 	this->beginRandomRun();
 	checkCollision();
+
 }
 
 void RandomRunRole::checkCollision()
@@ -60,8 +68,8 @@ void RandomRunRole::beginRandomRun()
 		Size visibleSize = Director::getInstance()->getVisibleSize();
 		Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-		auto pX = visibleSize.width *  (4 - CCRANDOM_0_1() * 8);
-		auto pY = visibleSize.height * (4 - CCRANDOM_0_1() * 8);
+		auto pX = visibleSize.width *  CCRANDOM_0_1();// (4 - *8);
+		auto pY = visibleSize.height * CCRANDOM_0_1();// (4 - *8);
 
 		
 
@@ -96,10 +104,10 @@ void RandomRunRole::beginRandomRun()
 		//this->runAction(seq1);
 		this->runAction(seq2);
 
-		auto rota = RotateBy::create(30,360);
-		auto fseq = RepeatForever::create(rota);
+		//auto rota = RotateBy::create(30,360);
+		//auto fseq = RepeatForever::create(rota);
 
-		this->runAction(fseq);
+		//this->runAction(fseq);
 
 	}
 }

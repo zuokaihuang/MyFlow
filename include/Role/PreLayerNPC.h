@@ -10,7 +10,7 @@ namespace tds{
 	{
 	public:
 		CREATE_FUNC(PreLayerNPC);
-		virtual std::string getPath(){ return "PreLayerNPC.png"; }
+		virtual std::string getPath(){ return "images/npc/PreLayerNPC.png"; }
 	private:
 		PreLayerNPC();
 	};
