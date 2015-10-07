@@ -2,6 +2,8 @@
 #include "include/Layer/GameLayer.h"
 #include "include/Layer/OperateLayer.h"
 
+#include "include/Role/GameEntity.h"
+
 USING_NS_CC;
 using namespace tds;
 
@@ -83,12 +85,15 @@ bool HelloWorld::init()
     this->addChild(sprite, 0);
     */
 	
-	auto gameLayer = GameLayer::create();
-	this->addChild(gameLayer,2, kTagGameLayer);
-	
-	auto operateLayer = OperateLayer::create();
-	this->addChild(operateLayer,3);
-
+//	auto gameLayer = GameLayer::create();
+//	this->addChild(gameLayer,2, kTagGameLayer);
+//	
+//	auto operateLayer = OperateLayer::create();
+//	this->addChild(operateLayer,3);
+    
+    auto entity = GameEntity::create();
+    this->addChild(entity);
+    CCLOG("aa");
     return true;
 }
 
